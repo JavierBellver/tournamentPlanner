@@ -1,0 +1,23 @@
+{
+  "name": "tournamentplanner",
+  "version": "1.0.0",
+  "description": "Web planner for tournaments made with node.js on the server side and js,jquery and html5 on client side",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JavierBellver/tournamentPlanner.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JavierBellver/tournamentPlanner/issues"
+  },
+  "homepage": "https://github.com/JavierBellver/tournamentPlanner#readme"
+}
