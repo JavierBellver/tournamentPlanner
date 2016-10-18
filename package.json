@@ -4,6 +4,7 @@
   "description": "Web planner for tournaments made with node.js on the server side and js,jquery and html5 on client side",
   "main": "index.js",
   "dependencies": {
+    "assert": "^1.4.1",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "mongodb": "^2.2.10"
