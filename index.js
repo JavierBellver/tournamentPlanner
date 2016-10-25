@@ -13,7 +13,7 @@ var db = new Db('tournamentplannerdb', new Server('localhost',27017));
 
 var tournaments = [];
 
-app.get('/api/tournaments')
+app.use(bodyParser.json());
 
 app.get('/api/tournaments', function(req, res){
 	db.open(function(err, db) {
@@ -28,18 +28,40 @@ app.get('/api/tournaments', function(req, res){
 
 app.get('/api/tournaments/:id', function(req, res) {
 	var id = req.params.id;
-	db.open(function(err, db) {
-		assert.equal(null, err);
-		db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
+	if(!id) {
+		res.status(404);
+		res.end();
+	}
+	else {
+		db.open(function(err, db) {
 			assert.equal(null, err);
-			return res.end(JSON.stringify(document));
+			db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
+				assert.equal(null, err);
+				return res.end(JSON.stringify(document));
+			});
+			db.close();
 		});
-		db.close();
-	});
+	}
 });
 
 app.post('/api/tournaments', function(req, res){
-
+	var nuevoTorneo = req.body;
+	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches) {
+		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches};
+		db.open(function(err, db) {
+			assert.equal(null, err);
+			db.collection("tournamentcollection").insert(torneoCreado, function(err, doc){
+				res.status(201);
+				res.header('Location','http://localhost:3000/api/tournaments/'+torneoCreado._id);
+				res.end();
+			});;
+			db.close();
+		});
+	}
+	else {
+		res.status(400);
+		res.send("El Torneo no tiene los campos adecuados");
+	}
 });
 
 app.put('/api/tournaments/:id', function(req, res){
@@ -63,6 +85,10 @@ app.get('/api/organizers', function(req, res){
 
 app.get('/api/organizers/:id', function(req, res){
 	var id = req.params.id;
+	if(!id) {
+		res.status(404);
+		res.end();
+	}
 	db.open(function(err, db) {
 		assert.equal(null, err);
 		db.collection("organizerscollection").find(ObjectId(id)).each(function(err, document){
