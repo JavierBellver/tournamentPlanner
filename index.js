@@ -32,9 +32,9 @@ app.get('/api/tournaments/:id', function(req, res) {
 		assert.equal(null, err);
 		db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 			assert.equal(null, err);
-			res.send(document);
-			db.close();
+			return res.end(JSON.stringify(document));
 		});
+		db.close();
 	});
 });
 
@@ -50,12 +50,27 @@ app.delete('/api/tournaments/:id', function(req, res) {
 
 });
 
-app.get('/api/organizer', function(req, res){
-
+app.get('/api/organizers', function(req, res){
+	db.open(function(err, db) {
+		assert.equal(null, err);
+		db.collection("organizerscollection").find().toArray(function(err, documents){
+			assert.equal(null, err);
+			res.send(documents);
+			db.close();
+		});
+	});
 });
 
-app.get('/api/organizer/:id', function(req, res){
-
+app.get('/api/organizers/:id', function(req, res){
+	var id = req.params.id;
+	db.open(function(err, db) {
+		assert.equal(null, err);
+		db.collection("organizerscollection").find(ObjectId(id)).each(function(err, document){
+			assert.equal(null, err);
+			return res.end(JSON.stringify(document));
+		});
+		db.close();
+	});
 });
 
 app.post('/api/organizer', function(req, res){
