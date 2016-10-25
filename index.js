@@ -64,12 +64,42 @@ app.post('/api/tournaments', function(req, res){
 	}
 });
 
-app.put('/api/tournaments/:id', function(req, res){
-
+app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
+	var nuevoTorneo = req.body;	
+	var id = req.params.id;
+	if(!id) {
+		res.status(404);
+		res.end();
+	} 
+	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches) {
+		db.open(function(err, db) {
+			assert.equal(null, err);
+			db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches});
+			db.close();
+		});
+		res.status(201);
+		res.header('Location','http://localhost:3000/api/tournaments/');
+		res.end();
+	}
+	else {
+		res.status(400);
+		res.send("El Torneo no tiene los campos adecuados");
+	}
 });
 
 app.delete('/api/tournaments/:id', function(req, res) {
-
+	var id = req.params.id;
+	if(!id) {
+		res.status(400);
+		res.end();
+	}
+	db.open(function(err, db) {
+		assert.equal(null, err);
+		db.collection("tournamentcollection").remove({_id: ObjectId(id)}, function(err, doc){
+			res.end();
+		});;
+	db.close();
+	});
 });
 
 app.get('/api/organizers', function(req, res){
