@@ -6,6 +6,7 @@ var assert = require('assert');
 
 var MongoClient = require('mongodb').MongoClient;
 var Db = require('mongodb').Db;
+var ObjectId = require('mongodb').ObjectId;
 var Server = require('mongodb').Server;
 var MongoUrl = 'mongodb://localhost:27017/tournamentplannerdb'
 var db = new Db('tournamentplannerdb', new Server('localhost',27017));
@@ -15,7 +16,6 @@ var tournaments = [];
 app.get('/api/tournaments')
 
 app.get('/api/tournaments', function(req, res){
-	var array = [];
 	db.open(function(err, db) {
 		assert.equal(null, err);
 		db.collection("tournamentcollection").find().toArray(function(err, documents){
@@ -27,7 +27,15 @@ app.get('/api/tournaments', function(req, res){
 });
 
 app.get('/api/tournaments/:id', function(req, res) {
-
+	var id = req.params.id;
+	db.open(function(err, db) {
+		assert.equal(null, err);
+		db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
+			assert.equal(null, err);
+			res.send(document);
+			db.close();
+		});
+	});
 });
 
 app.post('/api/tournaments', function(req, res){
