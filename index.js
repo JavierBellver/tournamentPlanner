@@ -149,15 +149,26 @@ app.post('/api/organizers', function(req, res){
 	}
 });
 
-app.put('/api/organizer/:id', function(req, res){
+app.put('/api/organizers/:id', function(req, res){
 	var id = req.params.id;
 	var organizador = req.body;
 	if(!id) {
 		res.status(400);
 		res.end();
 	}
+	if(organizador.name && organizador.email && organizador.organizacion) {
+		db.open(function(err, db) {
+			assert.equal(null, err);
+			db.collection("organizerscollection").save({"_id":ObjectId(id),"name": organizador.name, "email":organizador.email, "organizacion": organizador.organizacion});
+			db.close();
+		});
+		res.status(201);
+		res.header('Location','http://localhost:3000/api/organizations/');
+		res.end();
+	}
 	else {
-
+		res.status(494);
+		res.end();
 	}
 });
 
