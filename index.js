@@ -188,11 +188,47 @@ app.delete('/api/organizers/:id', function(req, res){
 });
 
 app.get('/api/tournaments/:id/competitors', function(req, res){
-
+	var id = req.params.id;
+	if(!id) {
+		res.status(404);
+		res.end();
+	}
+	else {
+		db.open(function(err, db) {
+			assert.equal(null, err);
+			db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
+				assert.equal(null, err);
+				if(document != null) {
+					var competitors = document.document.competitors;
+					res.send(JSON.stringify(competitors));
+				}
+			});
+			db.close();
+		});
+	}
 });
 
 app.post('/api/tournaments/:id/competitors', function(req, res){
-
+	var id = req.params.id;
+	var competitor = req.body;
+	if(!id) {
+		res.status(404);
+		res.end();
+	}
+	if(competitor.name && competitor.email && competitor.webpage) {
+		db.open(function(err,db) {
+			assert.equal(null, err);
+			db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
+				assert.equal(null,err);
+				if(document) {
+					document.competitors.push(competitor);
+					db.collection("tournamentcollection").save({"_id":ObjectId(id),document});
+					db.close();
+				}
+			});
+			res.end();
+		});
+	}
 });
 
 app.listen(3000, function() {
