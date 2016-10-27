@@ -172,8 +172,19 @@ app.put('/api/organizers/:id', function(req, res){
 	}
 });
 
-app.delete('/api/organizer/:id', function(req, res){
-
+app.delete('/api/organizers/:id', function(req, res){
+	var id = req.params.id;
+	if(!id) {
+		res.status(400);
+		res.end();
+	}
+	db.open(function(err, db) {
+		assert.equal(null, err);
+		db.collection("organizerscollection").remove({_id: ObjectId(id)}, function(err, doc){
+			res.end();
+		});;
+	db.close();
+	});
 });
 
 app.get('/api/tournaments/:id/competitors', function(req, res){
