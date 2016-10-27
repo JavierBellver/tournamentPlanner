@@ -46,8 +46,8 @@ app.get('/api/tournaments/:id', function(req, res) {
 
 app.post('/api/tournaments', function(req, res){
 	var nuevoTorneo = req.body;
-	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches) {
-		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches};
+	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
+		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches, competitors:nuevoTorneo.competitors};
 		db.open(function(err, db) {
 			assert.equal(null, err);
 			db.collection("tournamentcollection").insert(torneoCreado, function(err, doc){
@@ -71,10 +71,10 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 		res.status(404);
 		res.end();
 	} 
-	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches) {
+	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		db.open(function(err, db) {
 			assert.equal(null, err);
-			db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches});
+			db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
 			db.close();
 		});
 		res.status(201);
