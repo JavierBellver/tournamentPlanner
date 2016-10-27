@@ -129,12 +129,36 @@ app.get('/api/organizers/:id', function(req, res){
 	});
 });
 
-app.post('/api/organizer', function(req, res){
-
+app.post('/api/organizers', function(req, res){
+	var nuevoOrganizador = req.body;
+	if(nuevoOrganizador.name && nuevoOrganizador.email && nuevoOrganizador.organizacion) {
+		var organizadorCreado = {name: nuevoOrganizador.name, email:nuevoOrganizador.email, organizacion:nuevoOrganizador.organizacion};
+		db.open(function(err, db) {
+			assert.equal(null, err);
+			db.collection("organizerscollection").insert(organizadorCreado, function(err, doc){
+				res.status(201);
+				res.header('Location','http://localhost:3000/api/organizers/'+organizadorCreado._id);
+				res.end();
+			});;
+			db.close();
+		});
+	}
+	else {
+		res.status(400);
+		res.send("El Torneo no tiene los campos adecuados");
+	}
 });
 
 app.put('/api/organizer/:id', function(req, res){
+	var id = req.params.id;
+	var organizador = req.body;
+	if(!id) {
+		res.status(400);
+		res.end();
+	}
+	else {
 
+	}
 });
 
 app.delete('/api/organizer/:id', function(req, res){
