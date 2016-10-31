@@ -16,9 +16,10 @@ var tournaments = [];
 app.use(bodyParser.json());
 
 app.get('/api/tournaments', function(req, res){
+	var numpagina = req.query.pagina;
 	db.open(function(err, db) {
 		assert.equal(null, err);
-		db.collection("tournamentcollection").find().toArray(function(err, documents){
+		db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 			assert.equal(null, err);
 			res.send(documents);
 			db.close();
@@ -103,9 +104,10 @@ app.delete('/api/tournaments/:id', function(req, res) {
 });
 
 app.get('/api/organizers', function(req, res){
+	var numpagina = req.query.pagina;
 	db.open(function(err, db) {
 		assert.equal(null, err);
-		db.collection("organizerscollection").find().toArray(function(err, documents){
+		db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 			assert.equal(null, err);
 			res.send(documents);
 			db.close();
@@ -145,7 +147,7 @@ app.post('/api/organizers', function(req, res){
 	}
 	else {
 		res.status(400);
-		res.send("El Torneo no tiene los campos adecuados");
+		res.send("El Organizador no tiene los campos adecuados");
 	}
 });
 
@@ -239,3 +241,5 @@ app.listen(3000, function() {
 		db.close();
 	})
 })
+
+module.exports = app;
