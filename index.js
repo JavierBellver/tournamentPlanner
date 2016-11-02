@@ -31,14 +31,27 @@ app.get('/api/tournaments/:id', function(req, res) {
 	var id = req.params.id;
 	if(!id) {
 		res.status(404);
-		res.end();
+		return res.end();
 	}
 	else {
 		db.open(function(err, db) {
-			assert.equal(null, err);
+			if(err) {
+				db.close();
+				res.status(404);
+				return res.end();
+			}
+			if(!ObjectId.isValid(id)) {
+				db.close();
+				res.status(404);
+				return res.end();
+			}
 			db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
-				assert.equal(null, err);
-				return res.end(JSON.stringify(document));
+				if(err) {
+					return res.end({});
+				}
+				else {
+					return res.end(JSON.stringify(document));
+				}
 			});
 			db.close();
 		});
@@ -47,6 +60,7 @@ app.get('/api/tournaments/:id', function(req, res) {
 
 app.post('/api/tournaments', function(req, res){
 	var nuevoTorneo = req.body;
+	console.log(nuevoTorneo)
 	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches, competitors:nuevoTorneo.competitors};
 		db.open(function(err, db) {
@@ -78,7 +92,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 			db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
 			db.close();
 		});
-		res.status(201);
+		res.status(200);
 		res.header('Location','http://localhost:3000/api/tournaments/');
 		res.end();
 	}
@@ -97,6 +111,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 	db.open(function(err, db) {
 		assert.equal(null, err);
 		db.collection("tournamentcollection").remove({_id: ObjectId(id)}, function(err, doc){
+			res.status(200);
 			res.end();
 		});;
 	db.close();
@@ -109,6 +124,7 @@ app.get('/api/organizers', function(req, res){
 		assert.equal(null, err);
 		db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 			assert.equal(null, err);
+			res.status(200);
 			res.send(documents);
 			db.close();
 		});
@@ -122,9 +138,19 @@ app.get('/api/organizers/:id', function(req, res){
 		res.end();
 	}
 	db.open(function(err, db) {
-		assert.equal(null, err);
+		if(err) {
+			db.close();
+			res.status(404);
+			return res.end();
+		}
+		if(!ObjectId.isValid(id)) {
+			db.close();
+			res.status(404);
+			return res.end();
+		}
 		db.collection("organizerscollection").find(ObjectId(id)).each(function(err, document){
 			assert.equal(null, err);
+			res.status(200);
 			return res.end(JSON.stringify(document));
 		});
 		db.close();
@@ -164,7 +190,7 @@ app.put('/api/organizers/:id', function(req, res){
 			db.collection("organizerscollection").save({"_id":ObjectId(id),"name": organizador.name, "email":organizador.email, "organizacion": organizador.organizacion});
 			db.close();
 		});
-		res.status(201);
+		res.status(200);
 		res.header('Location','http://localhost:3000/api/organizations/');
 		res.end();
 	}
@@ -183,6 +209,7 @@ app.delete('/api/organizers/:id', function(req, res){
 	db.open(function(err, db) {
 		assert.equal(null, err);
 		db.collection("organizerscollection").remove({_id: ObjectId(id)}, function(err, doc){
+			res.status(200);
 			res.end();
 		});;
 	db.close();
@@ -201,7 +228,8 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 			db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 				assert.equal(null, err);
 				if(document != null) {
-					var competitors = document.document.competitors;
+					var competitors = document.competitors;
+					res.status(200);
 					res.send(JSON.stringify(competitors));
 				}
 			});
@@ -228,6 +256,7 @@ app.post('/api/tournaments/:id/competitors', function(req, res){
 					db.close();
 				}
 			});
+			res.status(201);
 			res.end();
 		});
 	}
