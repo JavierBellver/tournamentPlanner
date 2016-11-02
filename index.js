@@ -8,7 +8,7 @@ var MongoClient = require('mongodb').MongoClient;
 var Db = require('mongodb').Db;
 var ObjectId = require('mongodb').ObjectId;
 var Server = require('mongodb').Server;
-var MongoUrl = 'mongodb://localhost:27017/tournamentplannerdb'
+var MongoUrl = 'mongodb://tournamentplanneruser:tournamentplannerpassword@ds139197.mlab.com:39197/heroku_vgr65f61'
 var db = new Db('tournamentplannerdb', new Server('localhost',27017));
 
 var tournaments = [];
@@ -262,7 +262,12 @@ app.post('/api/tournaments/:id/competitors', function(req, res){
 	}
 });
 
-app.listen(process.env.PORT || 3000, function() {
+app.get('/', function(req, res){
+	res.status(200);
+	res.send("Welcome to tournamentPlannerAPI");
+})
+
+app.listen(process.env.PORT || 80, function() {
 	console.log("Inicialización de servidor de tournamentPlanner")
 	MongoClient.connect(MongoUrl, function(error, db){
 		assert.equal(null, error);
