@@ -262,13 +262,13 @@ app.post('/api/tournaments/:id/competitors', function(req, res){
 	}
 });
 
-app.listen(3000, function() {
+app.listen(process.env.PORT || 3000, function() {
 	console.log("Inicialización de servidor de tournamentPlanner")
 	MongoClient.connect(MongoUrl, function(error, db){
 		assert.equal(null, error);
 		console.log("Conectado a la BD de tournamentPlanner");
 		db.close();
 	})
-})
+});
 
 module.exports = app;
