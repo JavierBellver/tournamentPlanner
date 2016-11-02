@@ -14,6 +14,7 @@ var db = new Db('tournamentplannerdb', new Server('localhost',27017));
 var tournaments = [];
 
 app.use(bodyParser.json());
+app.set('port', (process.env.PORT || 3000));
 
 app.get('/api/tournaments', function(req, res){
 	var numpagina = req.query.pagina;
@@ -267,7 +268,7 @@ app.get('/', function(req, res){
 	res.send("Welcome to tournamentPlannerAPI");
 })
 
-app.listen(process.env.PORT || 80, function() {
+app.listen(app.get('port'), function() {
 	console.log("Inicialización de servidor de tournamentPlanner")
 	MongoClient.connect(MongoUrl, function(error, db){
 		assert.equal(null, error);
