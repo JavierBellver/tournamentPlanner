@@ -9,7 +9,7 @@ var Db = require('mongodb').Db;
 var ObjectId = require('mongodb').ObjectId;
 var Server = require('mongodb').Server;
 var MongoUrl = 'mongodb://tournamentplanneruser:tournamentplannerpassword@ds139197.mlab.com:39197/heroku_vgr65f61'
-var db = new Db('tournamentplannerdb', new Server('ds139197.mlab.com',39197));
+var db = new Db('heroku_vgr65f61', new Server('ds139197.mlab.com',39197));
 
 var tournaments = [];
 
