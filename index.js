@@ -19,11 +19,20 @@ app.set('port', (process.env.PORT || 3000));
 app.get('/api/tournaments', function(req, res){
 	var numpagina = req.query.pagina;
 	db.open(function(err, db) {
-		assert.equal(null, err);
-		db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
-			assert.equal(null, err);
-			res.send(documents);
-			db.close();
+		if(err) {
+			res.status(500);
+			res.send("Error en la llamada a la BD para obtener los torneos")
+		}
+		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
+			if(err) {
+				res.status(500);
+				res.send("Error en la autenticacion con la BD para obtener los torneos");
+			}
+			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
+				assert.equal(null, err);
+				res.send(documents);
+				db.close();
+			});
 		});
 	});
 });
