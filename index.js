@@ -373,8 +373,7 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 						res.send("Error al obtener los competidores")
 					}
 					if(document != null) {
-						var competitors = document.competitors;
-						console.log(competitors);
+						var competitors = document.document.competitors;
 						res.status(200);
 						res.send(JSON.stringify(competitors));
 						return db.close();
