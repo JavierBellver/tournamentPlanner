@@ -21,13 +21,13 @@ app.get('/api/tournaments', function(req, res){
 	db.open(function(err, db) {
 		if(err) {
 			res.status(500);
-			res.send("Error en la llamada a la BD para obtener los torneos")
+			return res.send("Error en la llamada a la BD para obtener los torneos")
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
-				db.close();
+				return db.close();
 			}
 			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 				assert.equal(null, err);
@@ -47,12 +47,10 @@ app.get('/api/tournaments/:id', function(req, res) {
 	else {
 		db.open(function(err, db) {
 			if(err) {
-				db.close();
-				res.status(404);
+				res.status(500);
 				return res.end();
 			}
 			if(!ObjectId.isValid(id)) {
-				db.close();
 				res.status(404);
 				return res.send("Error, id no valida");
 			}
@@ -85,13 +83,13 @@ app.post('/api/tournaments', function(req, res){
 		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches, competitors:nuevoTorneo.competitors};
 		db.open(function(err, db) {
 			if(err) {
-				res.status(404);
+				res.status(500);
 				return res.end();
 			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					res.send("Error en la autenticacion con la BD");
+					return res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").insert(torneoCreado, function(err, doc){
 					res.status(201);
@@ -118,7 +116,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		db.open(function(err, db) {
 			if(err) {
-				res.status(404);
+				res.status(500);
 				return res.end();
 			}
 			if(!ObjectId.isValid(id)) {
@@ -154,7 +152,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 	}
 	db.open(function(err, db) {
 		if(err) {
-			res.status(404);
+			res.status(500);
 			return res.end();
 		}
 		if(!ObjectId.isValid(id)) {
@@ -166,7 +164,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
-				db.close();
+				return db.close();
 			}
 			db.collection("tournamentcollection").remove({_id: ObjectId(id)}, function(err, doc){
 				if(err) {
@@ -189,14 +187,14 @@ app.get('/api/organizers', function(req, res){
 	var numpagina = req.query.pagina;
 	db.open(function(err, db) {
 		if(err) {
-			res.status(404);
+			res.status(500);
 			return res.end();
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
-				db.close();
+				return db.close();
 			}
 			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 				if(err) {
@@ -215,13 +213,13 @@ app.get('/api/organizers', function(req, res){
 app.get('/api/organizers/:id', function(req, res){
 	var id = req.params.id;
 	if(!id) {
-		res.status(404);
+		res.status(500);
 		res.end();
 	}
 	db.open(function(err, db) {
 		if(err) {
 			db.close();
-			res.status(404);
+			res.status(500);
 			return res.end();
 		}
 		if(!ObjectId.isValid(id)) {
@@ -233,10 +231,14 @@ app.get('/api/organizers/:id', function(req, res){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
-				db.close();
+				return db.close();
 			}
 			db.collection("organizerscollection").find(ObjectId(id)).each(function(err, document){
-				assert.equal(null, err);
+				if(err) {
+					res.status(500);
+					res.send("Error obteniendo el organizador");
+					return db.close();
+				}
 				res.status(200);
 				res.end(JSON.stringify(document));
 				db.close();
@@ -250,19 +252,23 @@ app.post('/api/organizers', function(req, res){
 	if(nuevoOrganizador.name && nuevoOrganizador.email && nuevoOrganizador.organizacion) {
 		var organizadorCreado = {name: nuevoOrganizador.name, email:nuevoOrganizador.email, organizacion:nuevoOrganizador.organizacion};
 		db.open(function(err, db) {
-			assert.equal(null, err);
+			if(err) {
+				res.status(500);
+				return res.end();
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
 					res.send("Error en la autenticacion con la BD");
+					return db.close();
 				}
 				db.collection("organizerscollection").insert(organizadorCreado, function(err, doc){
 					res.status(201);
 					res.header('Location','http://localhost:3000/api/organizers/'+organizadorCreado._id);
 					res.end();
+					db.close();
 				});
 			});
-			db.close();
 		});
 	}
 	else {
@@ -276,23 +282,26 @@ app.put('/api/organizers/:id', function(req, res){
 	var organizador = req.body;
 	if(!id) {
 		res.status(400);
-		res.end();
+		return res.end();
 	}
 	if(organizador.name && organizador.email && organizador.organizacion) {
 		db.open(function(err, db) {
-			assert.equal(null, err);
+			if(err) {
+				res.status(500);
+				return res.end();
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
 					res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("organizerscollection").save({"_id":ObjectId(id),"name": organizador.name, "email":organizador.email, "organizacion": organizador.organizacion});
+				res.status(200);
+				res.header('Location','http://localhost:3000/api/organizations/');
+				res.end();
+				db.close();
 			});
-			db.close();
 		});
-		res.status(200);
-		res.header('Location','http://localhost:3000/api/organizations/');
-		res.end();
 	}
 	else {
 		res.status(494);
@@ -304,21 +313,25 @@ app.delete('/api/organizers/:id', function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(400);
-		res.end();
+		return res.end();
 	}
 	db.open(function(err, db) {
-		assert.equal(null, err);
+		if(err) {
+			res.status(500);
+			return res.end();
+		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
+				return db.close();
 			}
 			db.collection("organizerscollection").remove({_id: ObjectId(id)}, function(err, doc){
 				res.status(200);
 				res.end();
+				return db.close();
 			});;
 		});
-	db.close();
 	});
 });
 
