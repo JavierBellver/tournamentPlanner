@@ -290,6 +290,11 @@ app.put('/api/organizers/:id', function(req, res){
 				res.status(500);
 				return res.end();
 			}
+			if(!ObjectId.isValid(id)) {
+				db.close();
+				res.status(404);
+				return res.send("Error, id no valida");
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
@@ -320,6 +325,11 @@ app.delete('/api/organizers/:id', function(req, res){
 			res.status(500);
 			return res.end();
 		}
+		if(!ObjectId.isValid(id)) {
+			db.close();
+			res.status(404);
+			return res.send("Error, id no valida");
+		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
@@ -339,26 +349,37 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(404);
-		res.end();
+		return res.send("Error id nula");
 	}
 	else {
 		db.open(function(err, db) {
-			assert.equal(null, err);
+			if(err) {
+				res.status(500);
+				return res.end();
+			}
+			if(!ObjectId.isValid(id)) {
+				db.close();
+				res.status(404);
+				return res.send("Error, id no valida");
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					res.send("Error en la autenticacion con la BD");
+					return res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
-					assert.equal(null, err);
+					if(err) {
+						res.status(500);
+						res.send("Error al obtener los competidores")
+					}
 					if(document != null) {
 						var competitors = document.competitors;
 						res.status(200);
 						res.send(JSON.stringify(competitors));
+						return db.close();
 					}
 				});
 			});
-			db.close();
 		});
 	}
 });
@@ -372,19 +393,31 @@ app.post('/api/tournaments/:id/competitors', function(req, res){
 	}
 	if(competitor.name && competitor.email && competitor.webpage) {
 		db.open(function(err,db) {
-			assert.equal(null, err);
+			if(err) {
+				res.status(500);
+				return res.end();
+			}
+			if(!ObjectId.isValid(id)) {
+				db.close();
+				res.status(404);
+				return res.send("Error, id no valida");
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
+				if(err) {
+					res.status(500);
+					return res.send("Error en la autenticacion con la BD");
+				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 					assert.equal(null,err);
 					if(document) {
 						document.competitors.push(competitor);
 						db.collection("tournamentcollection").save({"_id":ObjectId(id),document});
+						res.status(201);
+						res.end();
 						db.close();
 					}
 				});
 			});
-			res.status(201);
-			res.end();
 		});
 	}
 });
