@@ -27,6 +27,7 @@ app.get('/api/tournaments', function(req, res){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
+				db.close();
 			}
 			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 				assert.equal(null, err);
@@ -63,14 +64,15 @@ app.get('/api/tournaments/:id', function(req, res) {
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 					if(err) {
 						res.status(500);
-						return res.end("Error en la BD al obtener el torneo");
+						res.end("Error en la BD al obtener el torneo");
+						return db.close();
 					}
 					else {
 						res.status(200);
-						return res.end(JSON.stringify(document));
+						res.end(JSON.stringify(document));
+						return db.close();
 					}
 				});
-				db.close();
 			});
 		});
 	}
@@ -122,7 +124,8 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					return res.send("Error en la autenticacion con la BD");
+					res.send("Error en la autenticacion con la BD");
+					return db.close();
 				}
 				db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
 				res.status(200);
@@ -167,14 +170,22 @@ app.delete('/api/tournaments/:id', function(req, res) {
 app.get('/api/organizers', function(req, res){
 	var numpagina = req.query.pagina;
 	db.open(function(err, db) {
-		assert.equal(null, err);
+		if(err) {
+			res.status(404);
+			return res.end();
+		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
+				db.close();
 			}
 			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
-				assert.equal(null, err);
+				if(err) {
+					res.status(500);
+					res.send("Error obteniendo los organizadores");
+					return db.close();
+				}
 				res.status(200);
 				res.send(documents);
 				db.close();
@@ -204,13 +215,14 @@ app.get('/api/organizers/:id', function(req, res){
 			if(err) {
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
+				db.close();
 			}
 			db.collection("organizerscollection").find(ObjectId(id)).each(function(err, document){
 				assert.equal(null, err);
 				res.status(200);
-				return res.end(JSON.stringify(document));
+				res.end(JSON.stringify(document));
+				db.close();
 			});
-			db.close();
 		});
 	});
 });
