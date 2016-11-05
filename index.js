@@ -32,7 +32,7 @@ app.get('/api/tournaments', function(req, res){
 			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
 				assert.equal(null, err);
 				res.send(documents);
-				db.close();
+				return db.close();
 			});
 		});
 	});
@@ -57,7 +57,7 @@ app.get('/api/tournaments/:id', function(req, res) {
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					res.send("Error en la autenticacion con la BD");
+					return res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 					if(err) {
@@ -95,8 +95,8 @@ app.post('/api/tournaments', function(req, res){
 					res.status(201);
 					res.header('Location','http://localhost:3000/api/tournaments/'+torneoCreado._id);
 					res.end();
+					return db.close();
 				});;
-				db.close();
 			});
 		});
 	}
