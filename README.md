@@ -1,14 +1,13 @@
 # tournamentPlanner
-Web planner for tournaments made with node.js on the server side and js,jquery and html5 on client side.
+[![Apiary Documentation](https://img.shields.io/badge/Apiary-Documented-blue.svg)](http://docs.tournamentplanner.apiary.io/)
 
-## Caracteristics to implement on the first iteration: 
+Web Rest API for the organization of tournament. Currently on an early build. Built using node.js with express 
+and mocha for testing. 
 
-1 to 4 : CRUD Tournaments
-5 to 8 : CRUD Organizador
-9 to 10: CR Participante. Participante se puede apuntar a torneos existentes.
+## Characteristics currently implemented:
 
-## Para iniciar la aplicación
+CRUD Tournaments
+CRUD Organizador
+CR Competitors. You can add new competitors to already existing tournaments and you can retrieve the competitors that have been added to the tournament.
 
-	-Iniciar una instancia de mongodb mongod --dbpath /home/jb/ADI/Practica1/tournamentPlanner --storageEngine=mmapv1
-	-
 
