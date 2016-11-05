@@ -115,11 +115,14 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 	} 
 	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		db.open(function(err, db) {
-			assert.equal(null, err);
+			if(err) {
+				res.status(404);
+				return res.end();
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					res.send("Error en la autenticacion con la BD");
+					return res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
 			});
@@ -142,7 +145,10 @@ app.delete('/api/tournaments/:id', function(req, res) {
 		res.end();
 	}
 	db.open(function(err, db) {
-		assert.equal(null, err);
+		if(err) {
+			res.status(404);
+			return res.end();
+		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
