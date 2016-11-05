@@ -93,7 +93,7 @@ app.post('/api/tournaments', function(req, res){
 				}
 				db.collection("tournamentcollection").insert(torneoCreado, function(err, doc){
 					res.status(201);
-					res.header('Location','http://localhost:3000/api/tournaments/'+torneoCreado._id);
+					res.header('Location','/api/tournaments/'+torneoCreado._id);
 					res.end();
 					return db.close();
 				});;
@@ -132,7 +132,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 				}
 				db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
 				res.status(200);
-				res.header('Location','http://localhost:3000/api/tournaments/');
+				res.header('Location','/api/tournaments/'+id);
 				res.end();
 				db.close();
 			});
@@ -174,7 +174,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 					db.close();
 				}
 				else {
-					res.status(200);
+					res.status(204);
 					res.end();
 					db.close();
 				}
@@ -264,7 +264,7 @@ app.post('/api/organizers', function(req, res){
 				}
 				db.collection("organizerscollection").insert(organizadorCreado, function(err, doc){
 					res.status(201);
-					res.header('Location','http://localhost:3000/api/organizers/'+organizadorCreado._id);
+					res.header('Location','/api/organizers/'+organizadorCreado._id);
 					res.end();
 					db.close();
 				});
@@ -302,7 +302,7 @@ app.put('/api/organizers/:id', function(req, res){
 				}
 				db.collection("organizerscollection").save({"_id":ObjectId(id),"name": organizador.name, "email":organizador.email, "organizacion": organizador.organizacion});
 				res.status(200);
-				res.header('Location','http://localhost:3000/api/organizations/');
+				res.header('Location','/api/organizers/');
 				res.end();
 				db.close();
 			});
@@ -337,7 +337,7 @@ app.delete('/api/organizers/:id', function(req, res){
 				return db.close();
 			}
 			db.collection("organizerscollection").remove({_id: ObjectId(id)}, function(err, doc){
-				res.status(200);
+				res.status(204);
 				res.end();
 				return db.close();
 			});;
