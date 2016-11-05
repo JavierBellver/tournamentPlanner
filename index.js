@@ -125,11 +125,11 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 					return res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
+				res.status(200);
+				res.header('Location','http://localhost:3000/api/tournaments/');
+				res.end();
 			});
 			db.close();
-			res.status(200);
-			res.header('Location','http://localhost:3000/api/tournaments/');
-			res.end();
 		});
 	}
 	else {
