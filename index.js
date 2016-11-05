@@ -159,9 +159,17 @@ app.delete('/api/tournaments/:id', function(req, res) {
 				db.close();
 			}
 			db.collection("tournamentcollection").remove({_id: ObjectId(id)}, function(err, doc){
-				res.status(200);
-				res.end();
-				db.close();
+				if(err) {
+					console.log(err);
+					res.status(500);
+					res.send("Error en el borrado del torneo");
+					db.close();
+				}
+				else {
+					res.status(200);
+					res.end();
+					db.close();
+				}
 			});
 		});
 	});
