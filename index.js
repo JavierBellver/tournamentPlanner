@@ -62,16 +62,16 @@ app.get('/api/tournaments/:id', function(req, res) {
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 					if(err) {
-						res.state(500);
+						res.status(500);
 						return res.end("Error en la BD al obtener el torneo");
 					}
 					else {
-						res.state(200);
+						res.status(200);
 						return res.end(JSON.stringify(document));
 					}
 				});
+				db.close();
 			});
-			db.close();
 		});
 	}
 });
@@ -88,7 +88,7 @@ app.post('/api/tournaments', function(req, res){
 			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
-					res.state(500);
+					res.status(500);
 					res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").insert(torneoCreado, function(err, doc){
@@ -118,7 +118,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 			assert.equal(null, err);
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
-					res.state(500);
+					res.status(500);
 					res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").save({"_id":ObjectId(id),"name": nuevoTorneo.name, "game":nuevoTorneo.game, "matches":nuevoTorneo.matches, "competitors":nuevoTorneo.competitors});
@@ -145,7 +145,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 		assert.equal(null, err);
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
-				res.state(500);
+				res.status(500);
 				res.send("Error en la autenticacion con la BD");
 			}
 			db.collection("tournamentcollection").remove({_id: ObjectId(id)}, function(err, doc){
@@ -163,7 +163,7 @@ app.get('/api/organizers', function(req, res){
 		assert.equal(null, err);
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
-				res.state(500);
+				res.status(500);
 				res.send("Error en la autenticacion con la BD");
 			}
 			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
@@ -195,7 +195,7 @@ app.get('/api/organizers/:id', function(req, res){
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
-				res.state(500);
+				res.status(500);
 				res.send("Error en la autenticacion con la BD");
 			}
 			db.collection("organizerscollection").find(ObjectId(id)).each(function(err, document){
@@ -216,7 +216,7 @@ app.post('/api/organizers', function(req, res){
 			assert.equal(null, err);
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
-					res.state(500);
+					res.status(500);
 					res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("organizerscollection").insert(organizadorCreado, function(err, doc){
@@ -246,7 +246,7 @@ app.put('/api/organizers/:id', function(req, res){
 			assert.equal(null, err);
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
-					res.state(500);
+					res.status(500);
 					res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("organizerscollection").save({"_id":ObjectId(id),"name": organizador.name, "email":organizador.email, "organizacion": organizador.organizacion});
@@ -273,7 +273,7 @@ app.delete('/api/organizers/:id', function(req, res){
 		assert.equal(null, err);
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
-				res.state(500);
+				res.status(500);
 				res.send("Error en la autenticacion con la BD");
 			}
 			db.collection("organizerscollection").remove({_id: ObjectId(id)}, function(err, doc){
@@ -296,7 +296,7 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 			assert.equal(null, err);
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
-					res.state(500);
+					res.status(500);
 					res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
