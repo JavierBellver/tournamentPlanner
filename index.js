@@ -54,7 +54,7 @@ app.get('/api/tournaments/:id', function(req, res) {
 			if(!ObjectId.isValid(id)) {
 				db.close();
 				res.status(404);
-				return res.end();
+				return res.send("Error, id no valida");
 			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
@@ -121,6 +121,11 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 				res.status(404);
 				return res.end();
 			}
+			if(!ObjectId.isValid(id)) {
+				db.close();
+				res.status(404);
+				return res.send("Error, id no valida");
+			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
@@ -151,6 +156,11 @@ app.delete('/api/tournaments/:id', function(req, res) {
 		if(err) {
 			res.status(404);
 			return res.end();
+		}
+		if(!ObjectId.isValid(id)) {
+			db.close();
+			res.status(404);
+			return res.send("Error, id no valida");
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
