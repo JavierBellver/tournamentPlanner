@@ -121,6 +121,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 			}
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
+					console.log(err);
 					res.status(500);
 					return res.send("Error en la autenticacion con la BD");
 				}
@@ -151,6 +152,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
+				console.log(err);
 				res.status(500);
 				res.send("Error en la autenticacion con la BD");
 			}
