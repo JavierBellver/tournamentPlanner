@@ -374,6 +374,7 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 					}
 					if(document != null) {
 						var competitors = document.competitors;
+						console.log(competitors);
 						res.status(200);
 						res.send(JSON.stringify(competitors));
 						return db.close();
