@@ -365,14 +365,16 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					return res.send("Error en la autenticacion con la BD");
+					res.send("Error en la autenticacion con la BD");
+					return db.close();
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 					if(err) {
 						res.status(500);
 						res.send("Error al obtener los competidores")
+						return db.close();
 					}
-					if(document != null) {
+					if(document && document !== null && typeof document !== 'undefined' && document !== 'undefined') {
 						var competitors = document.document.competitors;
 						res.status(200);
 						res.send(JSON.stringify(competitors));
@@ -389,7 +391,7 @@ app.post('/api/tournaments/:id/competitors', function(req, res){
 	var competitor = req.body;
 	if(!id) {
 		res.status(404);
-		res.end();
+		return res.end();
 	}
 	if(competitor.name && competitor.email && competitor.webpage) {
 		db.open(function(err,db) {
@@ -408,7 +410,10 @@ app.post('/api/tournaments/:id/competitors', function(req, res){
 					return res.send("Error en la autenticacion con la BD");
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
-					assert.equal(null,err);
+					if(err) {
+						res.status(500);
+						return res.send("Error creando el nuevo competidor");
+					}
 					if(document) {
 						document.competitors.push(competitor);
 						db.collection("tournamentcollection").save({"_id":ObjectId(id),document});
