@@ -1,0 +1,242 @@
+FORMAT: 1A
+HOST: https://tournamentplanner.herokuapp.com/api
+
+# TournamentPlanner
+
+TournamentPlanner es una API Rest simple para la organización
+de torneos. Tanto para organizarlos y seguirlos como para apuntarse.
+
+## Colección de torneos [/torneos]
+
+### Listar todos los torneos [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "_id": "581cdaec914804001131befd",
+                "name": "1er torneo heroku",
+                "game": "Overwatch",
+                "matches": [],
+                "competitors": []
+            }
+        ]
+
+### Crear un nuevo torneo [POST]
+
+Puedes crear un nuevo torneo mediante esta acción. Para ello debes incluir un
+objeto JSON que contenga los datos necesarios que son:
+
+#### El nombre del torneo
+
+#### El juego al que pertenece el torneo
+
+#### Las partidas programadas, si aún no se ha programado ninguna se puede enviar un array vacio
+
+#### Los competidores apuntados, si aún no se ha apuntado ninguno se puede enviar un array vacio
+
++ Request (application/json)
+
+        {
+            "name": "Segundo torneo",
+            "game": "Team Fortress 2",
+            "matches": [],
+            "competitors": []
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /api/tournaments/581cdaec914804001131beff
+
+    + Body
+
+            {
+                "_id": "581cdaec914804001131befd",
+                "name": "Segundo torneo",
+                "game": "Team Fortress 2",
+                "matches": [],
+                "competitors": []
+            }
+        
+## Torneo [/torneos/{torneo_id}]
+
+### Ver un torneo en detalle [GET]
+
++ Parameters
+    + torneo_id (string,required) - ID del torneo 
+
++ Response 200 (application/json)
+            
+        {
+            "_id": "581cdaec914804001131befd",
+            "name": "1er torneo heroku",
+            "game": "Overwatch",
+            "matches": [],
+            "competitors": []
+        }
+        
+### Actualizar un torneo [PUT]
+
+Para actualizar un torneo es necesario enviar un objeto JSON
+con los nuevos valores.
+
++ Parameters
+    + torneo_id (string,required) - ID del torneo
+    
++ Request
+
+        {
+            "name": "ChangedName",
+            "game": "Team Fortress 2",
+            "matches": [],
+            "competitors": []
+        }
+    
++ Response 200
+
+### Borrar un torneo [DELETE]
+
++ Parameters
+    + torneo_id (string,required) - ID del torneo
+    
++ Response 200
+
+## Colección de organizadores [/organizers]
+
+### Listar todos los organizadores [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "_id": "581e258c8cdc1f0011f453da",
+                "name": "Pepe",
+                "email": "pepe@organizadores.com",
+                "organizacion": "PepeTournaments"
+            }
+        ]
+
+### Registrar un nuevo organizador [POST]
+
+Puedes crear un nuevo organizador mediante esta acción. Para ello debes incluir un
+objeto JSON que contenga los datos necesarios que son:
+
+#### El nombre del organizador
+
+#### El email del organizador
+
+#### La organización a la que representa
+
++ Request (application/json)
+
+            {
+                "name": "Pepe",
+                "email": "pepe@organizadores.com",
+                "organizacion": "PepeTournaments"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /api/organizers/581cdaec91480ee01131beff
+
+    + Body
+
+            {
+                "_id": "581cdaec91480ee01131beff",
+                "name": "Pepe",
+                "email": "pepe@organizadores.com",
+                "organizacion": "PepeTournaments"
+            }
+            
+## Organizador [/organizers/{organizer_id}]
+
+### Ver un organizador en detalle [GET]
+
++ Parameters
+    + organizer_id (string,required) - ID del organizador 
+
++ Response 200 (application/json)
+            
+            {
+                "_id": "581cdaec91480ee01131beff",
+                "name": "Pepe",
+                "email": "pepe@organizadores.com",
+                "organizacion": "PepeTournaments"
+            }
+        
+### Actualizar un organizador [PUT]
+
+Para actualizar un organizador es necesario enviar un objeto JSON
+con los nuevos valores.
+
++ Parameters
+    + organizer_id (string,required) - ID del organizador
+    
++ Request
+
+            {
+                "name": "Pepe",
+                "email": "pepe@organizadores.com",
+                "organizacion": "PepeTournaments"
+            }
+    
++ Response 200
+
+### Borrar un organizador [DELETE]
+
++ Parameters
+    + organizer_id (string,required) - ID del organizador
+    
++ Response 200
+
+## Competidor [/tournament/{torneo_id}/competitors]
+
+### Listar a todos los competidores del torneo seleccionado [GET]
+
++ Parameters
+    + torneo_id (string,required) - ID del torneo
+    
++ Response 200 (application/json)
+
+        [
+            {
+                "name": "Krusher",
+                "email": "krusher@fakemail.com",
+                "webpage": "teamkrusher@gmail.com"
+            }
+        ]
+
+### Añadir un nuevo competidor al torneo [POST]
+
+Puedes añadir un nuevo competidor al torneo enviando un objeto 
+JSON con los siguientes datos, nota los competidores deben añadirse
+por cada torneo.
+
+#### El nombre del competidor
+
+#### El email del competidor
+
+#### La página personal del competidor
+
++ Parameters
+    + torneo_id (string,required) - ID del torneo
+    
++ Request
+
+        {
+            "name": "Krusher",
+            "email": "krusher@fakemail.com",
+            "webpage": "teamkrusher@gmail.com"
+        }
+        
++ Response 201
+
+        {
+            "name": "Krusher",
+            "email": "krusher@fakemail.com",
+            "webpage": "teamkrusher@gmail.com"
+        }
