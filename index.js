@@ -365,23 +365,26 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 			db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 				if(err) {
 					res.status(500);
-					return res.send("Error en la autenticacion con la BD");
+					res.send("Error en la autenticacion con la BD");
+					return db.close();
 				}
 				db.collection("tournamentcollection").find(ObjectId(id)).each(function(err, document){
 					if(err) {
 						res.status(500);
-						return res.send("Error al obtener los competidores")
+						res.send("Error al obtener los competidores")
+						return db.close();
 					}
 					if(document != null && typeof document.competitors !== 'undefined' && document.competitors !== 'undefined') {
 						var competitors = document.competitors;
 						res.status(200);
 						res.send(JSON.stringify(competitors));
+						return db.close();
 					}
 					else {
 						res.status(500);
 						res.send("Error al obtener los competidores");
+						return db.close();
 					}
-					return db.close();
 				});
 			});
 		});
