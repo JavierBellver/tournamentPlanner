@@ -372,7 +372,7 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 						res.status(500);
 						return res.send("Error al obtener los competidores")
 					}
-					if(document != null && document.competitors !== 'undefined') {
+					if(document != null && typeof document.competitors !== 'undefined' && document.competitors !== 'undefined') {
 						var competitors = document.competitors;
 						res.status(200);
 						res.send(JSON.stringify(competitors));
