@@ -380,11 +380,6 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 						res.send(JSON.stringify(competitors));
 						return db.close();
 					}
-					else {
-						res.status(500);
-						res.send("Error al obtener los competidores");
-						return db.close();
-					}
 				});
 			});
 		});
