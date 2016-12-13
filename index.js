@@ -1,3 +1,5 @@
+// npm run
+// express use static
 var express = require('express');
 var app = express();
 
