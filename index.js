@@ -13,10 +13,27 @@ var Server = require('mongodb').Server;
 var MongoUrl = 'mongodb://tournamentplanneruser:tournamentplannerpassword@ds139197.mlab.com:39197/heroku_vgr65f61'
 var db = new Db('heroku_vgr65f61', new Server('ds139197.mlab.com',39197));
 
-var tournaments = [];
-
 app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 3000));
+app.use('/web', express.static('web'));
+
+app.post('/login', function(req, res){
+	var loginData = req.body;
+	if(loginData.login && loginData.password) {
+		if(loginData.login == "usuario" && loginData.password == "password") {
+			res.status(200);
+			res.send("Autorizado");
+		}
+		else {
+			res.status(403);
+			res.send("Usuario no autorizado")
+		}
+	}
+	else {
+		res.status(400);
+		res.send("Error, parametros incorrectos")
+	}
+});
 
 app.get('/api/tournaments', function(req, res){
 	var numpagina = req.query.pagina;
@@ -80,7 +97,6 @@ app.get('/api/tournaments/:id', function(req, res) {
 
 app.post('/api/tournaments', function(req, res){
 	var nuevoTorneo = req.body;
-	console.log(nuevoTorneo)
 	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches, competitors:nuevoTorneo.competitors};
 		db.open(function(err, db) {
