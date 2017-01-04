@@ -12,7 +12,7 @@ var Login = React.createClass({
           'Accept': 'application/json', 
           'Content-Type': 'application/json', 
         }, 
-        body: JSON.stringify({ login: 'usuario', password: 'password', })
+        body: JSON.stringify({ login: $("#inputLogin").val(), password: $("#inputPassword").val(), })
       })
           .then(function(respuesta){
               return respuesta.json()
@@ -25,6 +25,8 @@ var Login = React.createClass({
     render: function () {
         return <div>
               <h1>El API dice: {this.state.mensaje}</h1>
+              <input id="inputLogin" type="text"></input>
+              <input id="inputPassword" type="password"></input>
               <button onClick={this.enviarDatosLogin}>Obtener mensaje del API</button>
             </div>
     }

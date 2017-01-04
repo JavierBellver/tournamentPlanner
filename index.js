@@ -49,7 +49,10 @@ app.post('/login', function(req, res){
 
 app.get('/logout', function(req, res){
 	req.session.destroy();
-	res.send('logout');
+	var obj = {
+		mensaje: "Logged Out"
+	}
+	res.json(obj);
 });
 
 app.get('/api/tournaments', function(req, res){
