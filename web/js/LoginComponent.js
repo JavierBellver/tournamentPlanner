@@ -1,4 +1,5 @@
 var React = require('react')
+var ReactDOM = require('react-dom')
 var $ = require('jquery')
 
 var Login = React.createClass({
@@ -36,7 +37,6 @@ var Login = React.createClass({
                           onBlur={this.onBlur} />
                       <span className="error-message error-email"></span>
                   </div>
-
                   <div className='form-group'>
                       <label htmlFor="password">Password</label>
                       <input
