@@ -14,6 +14,7 @@ var Server = require('mongodb').Server;
 var MongoUrl = 'mongodb://tournamentplanneruser:tournamentplannerpassword@ds139197.mlab.com:39197/heroku_vgr65f61'
 var db = new Db('heroku_vgr65f61', new Server('ds139197.mlab.com',39197));
 var jwt = require('jwt-simple');
+var secret = '123456';
 
 app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 3000));
@@ -25,8 +26,11 @@ app.post('/login', function(req, res){
 	if(loginData.login && loginData.password) {
 		if(loginData.login == "usuario" && loginData.password == "password") {
 			res.status(200);
+			var user_id = 1;
+			var token = jwt.encode(user_id,secret);
 			var obj = {
-				mensaje: "Autorizado"
+				mensaje: "Autorizado",
+				token: token
 			}
 			res.json(obj);
 		}

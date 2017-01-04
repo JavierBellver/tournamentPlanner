@@ -5,6 +5,7 @@ var Login = React.createClass({
     getInitialState: function () {
       return {mensaje: ''}
     },
+
     enviarDatosLogin: function () {
       fetch('http://' + window.location.host + '/login', {
         method: "POST", 
@@ -20,15 +21,33 @@ var Login = React.createClass({
           .then(function(resultado){
               //el API también nos envía la hora, pero la ignoramos
               this.setState({mensaje:resultado.mensaje})
+              localStorage.setItem('token',resultado.token)
           }.bind(this))
     },
     render: function () {
-        return <div>
-              <h1>El API dice: {this.state.mensaje}</h1>
-              <input id="inputLogin" type="text"></input>
-              <input id="inputPassword" type="password"></input>
-              <button onClick={this.enviarDatosLogin}>Obtener mensaje del API</button>
-            </div>
+        return  <form className="login-form">
+                  <div className='form-group'>
+                      <label htmlFor="email">Email</label>
+                      <input
+                          type="text"
+                          id="inputLogin"
+                          onKeyPress={this.onKeyPress}
+                          onChange={this.onChange}
+                          onBlur={this.onBlur} />
+                      <span className="error-message error-email"></span>
+                  </div>
+
+                  <div className='form-group'>
+                      <label htmlFor="password">Password</label>
+                      <input
+                          type="password"
+                          id="inputPassword"
+                          onKeyPress={this.onKeyPress}
+                          onChange={this.onChange}
+                          onBlur={this.onBlur} />
+                  </div>
+                  <button type="button" name="login-submit" onClick={ this.enviarDatosLogin }>Login</button>
+                </form>
     }
 })
 
