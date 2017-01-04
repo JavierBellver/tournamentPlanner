@@ -1,11 +1,19 @@
-//Ejemplo de un componente React simple que hace una petición AJAX
 var React = require('react')
-var MiComponente = React.createClass({
+var $ = require('jquery')
+
+var Login = React.createClass({
     getInitialState: function () {
       return {mensaje: ''}
     },
-    obtenerMensaje: function () {
-      fetch('http://' + window.location.host + '/api/saludo')
+    enviarDatosLogin: function () {
+      fetch('http://' + window.location.host + '/login', {
+        method: "POST", 
+        headers: { 
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json', 
+        }, 
+        body: JSON.stringify({ login: 'usuario', password: 'password', })
+      })
           .then(function(respuesta){
               return respuesta.json()
           })
@@ -17,9 +25,9 @@ var MiComponente = React.createClass({
     render: function () {
         return <div>
               <h1>El API dice: {this.state.mensaje}</h1>
-              <button onClick={this.obtenerMensaje}>Obtener mensaje del API</button>
+              <button onClick={this.enviarDatosLogin}>Obtener mensaje del API</button>
             </div>
     }
 })
 
-module.exports = MiComponente
+module.exports = Login

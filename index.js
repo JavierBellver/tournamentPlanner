@@ -1,4 +1,5 @@
-// npm run
+// npm run*P
+
 // express use static
 var express = require('express');
 var app = express();
@@ -20,19 +21,29 @@ app.use('/web', express.static('web'));
 
 app.post('/login', function(req, res){
 	var loginData = req.body;
+	console.log(loginData);
 	if(loginData.login && loginData.password) {
 		if(loginData.login == "usuario" && loginData.password == "password") {
 			res.status(200);
-			res.send("Autorizado");
+			var obj = {
+				mensaje: "Autorizado"
+			}
+			res.json(obj);
 		}
 		else {
 			res.status(403);
-			res.send("Usuario no autorizado")
+			var obj = {
+				mensaje: "Usuario no autorizado"
+			}
+			res.json(obj);
 		}
 	}
 	else {
 		res.status(400);
-		res.send("Error, parametros incorrectos")
+		var obj = {
+			mensaje: "Usuario no autorizado"
+		}
+		res.json("Error, parametros incorrectos");
 	}
 });
 
