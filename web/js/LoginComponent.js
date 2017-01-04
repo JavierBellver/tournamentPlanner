@@ -27,6 +27,7 @@ var Login = React.createClass({
     },
     render: function () {
         return  <form className="login-form">
+                  <h2>{this.mensaje}</h2>
                   <div className='form-group'>
                       <label htmlFor="email">Email</label>
                       <input
