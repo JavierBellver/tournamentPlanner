@@ -6,7 +6,6 @@ var Login = React.createClass({
     getInitialState: function () {
       return {mensaje: ''}
     },
-
     enviarDatosLogin: function () {
       fetch('http://' + window.location.host + '/login', {
         method: "POST", 
