@@ -1,6 +1,8 @@
 var React = require('react');
+var Tournament = require('./Tournament')
+var TournamentDetails = require('./TournamentDetails')
 var EventBus = require('./servicios/EventBus')
-var API_torneos = require('./servicios/API_tournaments')
+var API_tournaments = require('./servicios/API_tournaments')
 
 var TournamentList = React.createClass({
 	getInitialState: function() {
@@ -33,7 +35,7 @@ var TournamentList = React.createClass({
 			var actual = this.state.tournaments[i]
 			var elemento;
 			if (this.state.detalle==i) {
-				elemento = <DetallesTournament key={i}
+				elemento = <TournamentDetails key={i}
 											pos={i}
 											name={actual.name}
 											game={actual.game}
@@ -55,5 +57,4 @@ var TournamentList = React.createClass({
 				</div>
 	}
 })
-
 module.exports = TournamentList

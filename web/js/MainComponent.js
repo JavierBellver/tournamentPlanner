@@ -9,8 +9,11 @@ var MainPage = React.createClass({
 
 	},
 	render: function () {
-		return 	<h1>Bienvenido a TournamentPlanner</h1>
-				<div id="loginComponent"></div>
-				<div id="tournamentListComponent"></div>
+		return 	<div>
+					<h1>Bienvenido a TournamentPlanner</h1>
+					<div id="loginComponent"></div>
+					<div id="tournamentListComponent"></div>
+				</div>
 	}
 })
+module.exports = MainPage

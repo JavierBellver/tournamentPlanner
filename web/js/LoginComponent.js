@@ -50,5 +50,4 @@ var Login = React.createClass({
                 </form>
     }
 })
-
 module.exports = Login
