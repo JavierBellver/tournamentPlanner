@@ -47,7 +47,7 @@ module.exports = {
       	})
 		.then(function(response) {
 			if (response.ok) {
-				return response.json();
+				return response;
 			}
 		})
 	}

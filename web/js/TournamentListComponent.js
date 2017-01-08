@@ -32,6 +32,19 @@ var TournamentList = React.createClass({
 	hideDetails: function() {
 		this.setState({detalle:undefined})
 	},
+	editDetails: function(id,pos) {
+		console.log(pos)
+	},
+	deleteDetails: function(id,pos) {
+		API_tournaments.deleteTournament(id)
+			.then(data => {
+				var torneos = this.state.tournaments;
+				torneos = torneos.filter(function(t){
+					return t._id != id;
+				})
+				this.setState({tournaments: torneos})
+			})
+	},
 	renderAddTournament: function() {
 		ReactDOM.render(<AddTournamentComponent/>, document.getElementById('addNewTournament'));
 	},
@@ -43,6 +56,7 @@ var TournamentList = React.createClass({
 			if (this.state.detalle==i) {
 				elemento = <TournamentDetails key={i}
 											pos={i}
+											id={actual._id}
 											name={actual.name}
 											game={actual.game}
 											matches={actual.matches}
@@ -52,8 +66,11 @@ var TournamentList = React.createClass({
 			else {
 				elemento = <Tournament key={i}
 									pos={i}
+									id={actual._id}
 									name={actual.name}
-									handleVerDetalles={this.seeDetails}/>
+									handleVerDetalles={this.seeDetails}
+									handleEditarDetalles={this.editDetails}
+									handleEliminarDetalles={this.deleteDetails}/>
 			}
 			tournaments.push(elemento);
 		}
