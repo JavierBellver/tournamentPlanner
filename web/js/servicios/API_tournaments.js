@@ -9,7 +9,7 @@ module.exports = {
 			})
 	},
 	createTournament: function(tournament) {
-		fetch(this.API_URL, {
+		return fetch(this.API_URL, {
         	method: "POST", 
         	headers: { 
           		'Accept': 'application/json', 
@@ -19,12 +19,12 @@ module.exports = {
       	})
 		.then(function(response) {
 			if (response.ok) {
-				return response.json();
+				return response;
 			}
 		})
 	},
 	editTournament: function(tournament,id) {
-		fetch(this.API_URL+'/'+id, {
+		return fetch(this.API_URL+'/'+id, {
         	method: "PUT", 
         	headers: { 
           		'Accept': 'application/json', 
@@ -39,7 +39,7 @@ module.exports = {
 		})
 	},
 	deleteTournament: function(id) {
-		fetch(this.API_URL+'/'+id, {
+		return fetch(this.API_URL+'/'+id, {
         	method: "DELETE", 
         	headers: { 
           		'Accept': 'application/json' 

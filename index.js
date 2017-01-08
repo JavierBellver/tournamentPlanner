@@ -64,12 +64,18 @@ app.get('/api/tournaments', function(req, res){
 	db.open(function(err, db) {
 		if(err) {
 			res.status(500);
-			return res.send("Error en la llamada a la BD para obtener los torneos")
+			var obj = {
+				mensaje: "Error en la llamada a la BD para obtener los torneos"
+			}
+			return res.json(obj);
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
-				res.send("Error en la autenticacion con la BD");
+				var obj = {
+					mensaje: "Error en la autenticacion con la BD"
+				}
+				res.json(obj);
 				return db.close();
 			}
 			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){

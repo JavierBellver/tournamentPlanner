@@ -1,6 +1,8 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Tournament = require('./Tournament')
 var TournamentDetails = require('./TournamentDetails')
+var AddTournamentComponent = require('./CreateTournament')
 var EventBus = require('./servicios/EventBus')
 var API_tournaments = require('./servicios/API_tournaments')
 
@@ -11,10 +13,11 @@ var TournamentList = React.createClass({
 	componentDidMount: function() {
 		EventBus.eventEmitter.addListener('newTournament', this.addTournament)
 		this.refrescarTorneos();
+		this.renderAddTournament();
 	},
 	addTournament: function(newTournament) {
 		var torneos = this.state.tournaments;
-		torneos.push(newTournament)
+		torneos.push(newTournament[0])
 		this.setState({tournaments: torneos, detalle:undefined})
 	},
 	refrescarTorneos: function() {
@@ -28,6 +31,9 @@ var TournamentList = React.createClass({
 	},
 	hideDetails: function() {
 		this.setState({detalle:undefined})
+	},
+	renderAddTournament: function() {
+		ReactDOM.render(<AddTournamentComponent/>, document.getElementById('addNewTournament'));
 	},
 	render: function() {
 		var tournaments = []
@@ -54,6 +60,7 @@ var TournamentList = React.createClass({
 		return <div id="lista">
 					<h1>Lista de torneos</h1>
 					{tournaments}
+					<div id="addNewTournament"></div>
 				</div>
 	}
 })
