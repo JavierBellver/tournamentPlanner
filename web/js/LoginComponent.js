@@ -1,10 +1,11 @@
 var React = require('react')
 var ReactDOM = require('react-dom')
+var EventBus = require('./servicios/EventBus')
 var $ = require('jquery')
 
 var Login = React.createClass({
     getInitialState: function () {
-      return {mensaje: ''}
+      return {mensaje: 'Log In'}
     },
     enviarDatosLogin: function () {
       fetch('http://' + window.location.host + '/login', {
@@ -21,12 +22,15 @@ var Login = React.createClass({
           .then(function(resultado){
               //el API también nos envía la hora, pero la ignoramos
               this.setState({mensaje:resultado.mensaje})
-              localStorage.setItem('token',resultado.token)
+              if(resultado.mensaje == "Autorizado") {
+                localStorage.setItem('token',resultado.token)
+                EventBus.eventEmitter.emit('loggedIn')
+              }
           }.bind(this))
     },
     render: function () {
         return  <form className="login-form">
-                  <h2>{this.mensaje}</h2>
+                  <h2>{this.state.mensaje}</h2>
                   <div className='form-group'>
                       <label htmlFor="email">Email</label>
                       <input
