@@ -33,9 +33,7 @@ module.exports = {
         	body: JSON.stringify(tournament)
       	})
 		.then(function(response) {
-			if (response.ok) {
-				return response.json();
-			}
+			return response;
 		})
 	},
 	deleteTournament: function(id) {

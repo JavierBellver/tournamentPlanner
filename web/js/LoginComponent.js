@@ -32,7 +32,7 @@ var Login = React.createClass({
         return  <form className="login-form">
                   <h2>{this.state.mensaje}</h2>
                   <div className='form-group'>
-                      <label htmlFor="email">Email</label>
+                      <label htmlFor="email">Login</label>
                       <input
                           type="text"
                           id="inputLogin"

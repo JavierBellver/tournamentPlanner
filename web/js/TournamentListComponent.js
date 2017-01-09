@@ -3,8 +3,18 @@ var ReactDOM = require('react-dom');
 var Tournament = require('./Tournament')
 var TournamentDetails = require('./TournamentDetails')
 var AddTournamentComponent = require('./CreateTournament')
+var EditTournament = require('./EditTournament')
 var EventBus = require('./servicios/EventBus')
 var API_tournaments = require('./servicios/API_tournaments')
+
+function findById(array,value) {
+	for(var i=0; i < array.length;i++) {
+		if(array[i].id === value) {
+			return i
+		}
+	}
+	return -1;
+}
 
 var TournamentList = React.createClass({
 	getInitialState: function() {
@@ -12,6 +22,7 @@ var TournamentList = React.createClass({
 	},
 	componentDidMount: function() {
 		EventBus.eventEmitter.addListener('newTournament', this.addTournament)
+		EventBus.eventEmitter.addListener('editedTournament', this.onEditTournament)
 		this.refrescarTorneos();
 		this.renderAddTournament();
 	},
@@ -32,8 +43,12 @@ var TournamentList = React.createClass({
 	hideDetails: function() {
 		this.setState({detalle:undefined})
 	},
-	editDetails: function(id,pos) {
-		console.log(pos)
+	onEditTournament: function(edited) {
+		var torneos = this.state.tournaments;
+		var i = findById(torneos,edited.id);
+		torneos[i] = edited[0];
+		this.setState({tournaments: torneos})
+		ReactDOM.unmountComponentAtNode(document.getElementById('editTournament'));
 	},
 	deleteDetails: function(id,pos) {
 		API_tournaments.deleteTournament(id)
@@ -47,6 +62,9 @@ var TournamentList = React.createClass({
 	},
 	renderAddTournament: function() {
 		ReactDOM.render(<AddTournamentComponent/>, document.getElementById('addNewTournament'));
+	},
+	renderEditTorneo: function(id,pos) {
+		ReactDOM.render(<EditTournament id={id}/>, document.getElementById('editTournament'));
 	},
 	render: function() {
 		var tournaments = []
@@ -69,13 +87,14 @@ var TournamentList = React.createClass({
 									id={actual._id}
 									name={actual.name}
 									handleVerDetalles={this.seeDetails}
-									handleEditarDetalles={this.editDetails}
+									handleEditarDetalles={this.renderEditTorneo}
 									handleEliminarDetalles={this.deleteDetails}/>
 			}
 			tournaments.push(elemento);
 		}
 		return <div id="lista">
 					<h1>Lista de torneos</h1>
+					<div id="editTournament"></div>
 					{tournaments}
 					<div id="addNewTournament"></div>
 				</div>
