@@ -1,7 +1,12 @@
 module.exports = {
 	API_URL : 'http://' + window.location.host + '/api/tournaments',
 	getTournaments: function(pagenumber,limite) {
-		return fetch(this.API_URL+'?pagina='+pagenumber+'&limite='+limite)
+		return fetch(this.API_URL+'?pagina='+pagenumber+'&limite='+limite, {
+			method: "GET",
+			headers: {
+				'Authorization': 'Bearer '+localStorage.getItem('token')
+			}
+		})
 			.then(function(response) {
 				if (response.ok) {
 					return response.json();

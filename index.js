@@ -15,17 +15,41 @@ var MongoUrl = 'mongodb://tournamentplanneruser:tournamentplannerpassword@ds1391
 var db = new Db('heroku_vgr65f61', new Server('ds139197.mlab.com',39197));
 var jwt = require('jwt-simple');
 var secret = '123456';
+var user_id = 1;
 
 app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 3000));
 app.use('/web', express.static('web'));
+
+function checkAuth(req, res, next){
+	if(req.header('Authorization')) {
+		var token = req.header('Authorization').split(" ").pop();
+		console.log(token);
+		if(jwt.decode(token,secret) == user_id) {
+			next();
+		}
+		else {
+			res.status(401);
+			var obj = {
+				mensaje: "Not Authorized"
+			}
+			res.json(obj);
+		}
+	}
+	else {
+		res.status(401);
+		var obj = {
+			mensaje: "Not Authorized"
+		}
+		res.json(obj);
+	}
+}
 
 app.post('/login', function(req, res){
 	var loginData = req.body;
 	if(loginData.login && loginData.password) {
 		if(loginData.login == "usuario" && loginData.password == "password") {
 			res.status(200);
-			var user_id = 1;
 			var token = jwt.encode(user_id,secret);
 			var obj = {
 				mensaje: "Autorizado",
@@ -58,7 +82,7 @@ app.get('/logout', function(req, res){
 	res.json(obj);
 });
 
-app.get('/api/tournaments', function(req, res){
+app.get('/api/tournaments', checkAuth, function(req, res){
 	var numpagina = req.query.pagina;
 	var numlimite = req.query.limite;
 	db.open(function(err, db) {
