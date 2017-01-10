@@ -22,7 +22,6 @@ app.use('/web', express.static('web'));
 
 app.post('/login', function(req, res){
 	var loginData = req.body;
-	console.log(loginData);
 	if(loginData.login && loginData.password) {
 		if(loginData.login == "usuario" && loginData.password == "password") {
 			res.status(200);
@@ -61,6 +60,7 @@ app.get('/logout', function(req, res){
 
 app.get('/api/tournaments', function(req, res){
 	var numpagina = req.query.pagina;
+	var numlimite = req.query.limite;
 	db.open(function(err, db) {
 		if(err) {
 			res.status(500);
@@ -78,7 +78,7 @@ app.get('/api/tournaments', function(req, res){
 				res.json(obj);
 				return db.close();
 			}
-			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
+			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(parseInt(numlimite)).toArray(function(err, documents){
 				assert.equal(null, err);
 				res.send(documents);
 				return db.close();

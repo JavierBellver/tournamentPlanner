@@ -18,7 +18,7 @@ function findById(array,value) {
 
 var TournamentList = React.createClass({
 	getInitialState: function() {
-		return {tournaments:[]}
+		return {tournaments:[], detalle:undefined, pagenumber: 1, tamPagina:3}
 	},
 	componentDidMount: function() {
 		EventBus.eventEmitter.addListener('newTournament', this.addTournament)
@@ -31,8 +31,8 @@ var TournamentList = React.createClass({
 		torneos.push(newTournament[0])
 		this.setState({tournaments: torneos, detalle:undefined})
 	},
-	refrescarTorneos: function() {
-		API_tournaments.getTournaments()
+	refrescarTorneos: function(pagenumber,tamPagina) {
+		API_tournaments.getTournaments(pagenumber,tamPagina)
 			.then(data => {
 				this.setState({tournaments: data})
 			})
@@ -59,6 +59,24 @@ var TournamentList = React.createClass({
 				})
 				this.setState({tournaments: torneos})
 			})
+	},
+	nextPage: function() {
+		var newPageNumber = this.state.pagenumber+1;
+		this.setState({pagenumber:newPageNumber})
+		this.refrescarTorneos(newPageNumber,this.state.tamPagina);
+	},
+	previousPage: function() {
+		var newPageNumber = this.state.pagenumber-1;
+		if(newPageNumber<1) {
+			newPageNumber = 1;
+		}
+		this.setState({pagenumber:newPageNumber})
+		this.refrescarTorneos(newPageNumber,this.state.tamPagina);
+	},
+	setTamPagina: function() {
+		var tamPagina = this.campoTamPagina.value;
+		this.setState({tamPagina:tamPagina})
+		this.refrescarTorneos(this.state.pagenumber,tamPagina);
 	},
 	renderAddTournament: function() {
 		ReactDOM.render(<AddTournamentComponent/>, document.getElementById('addNewTournament'));
@@ -96,6 +114,11 @@ var TournamentList = React.createClass({
 					<h1>Lista de torneos</h1>
 					<div id="editTournament"></div>
 					{tournaments}
+					<button onClick={this.nextPage}>Siguiente página</button>
+					<button onClick={this.previousPage}>Anterior página</button>
+					<input type="text" placeholder="Tamaño de la página"
+						ref={(campo)=>{this.campoTamPagina=campo}}/>
+					<button onClick={this.setTamPagina}>Insertar nuevo tamaño de página</button>
 					<div id="addNewTournament"></div>
 				</div>
 	}

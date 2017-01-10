@@ -1,7 +1,7 @@
 module.exports = {
 	API_URL : 'http://' + window.location.host + '/api/tournaments',
-	getTournaments: function() {
-		return fetch(this.API_URL)
+	getTournaments: function(pagenumber,limite) {
+		return fetch(this.API_URL+'?pagina='+pagenumber+'&limite='+limite)
 			.then(function(response) {
 				if (response.ok) {
 					return response.json();
