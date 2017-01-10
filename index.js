@@ -111,7 +111,7 @@ app.get('/api/tournaments', checkAuth, function(req, res){
 	});
 });
 
-app.get('/api/tournaments/:id', function(req, res) {
+app.get('/api/tournaments/:id',checkAuth, function(req, res) {
 	var id = req.params.id;
 	if(!id) {
 		res.status(404);
@@ -149,7 +149,7 @@ app.get('/api/tournaments/:id', function(req, res) {
 	}
 });
 
-app.post('/api/tournaments', function(req, res){
+app.post('/api/tournaments',checkAuth, function(req, res){
 	var nuevoTorneo = req.body;
 	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches, competitors:nuevoTorneo.competitors};
@@ -178,7 +178,7 @@ app.post('/api/tournaments', function(req, res){
 	}
 });
 
-app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
+app.put('/api/tournaments/:id',checkAuth, function(req, res){ //TODO arreglar put
 	var nuevoTorneo = req.body;	
 	var id = req.params.id;
 	if(!id) {
@@ -216,7 +216,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 	}
 });
 
-app.delete('/api/tournaments/:id', function(req, res) {
+app.delete('/api/tournaments/:id',checkAuth, function(req, res) {
 	var id = req.params.id;
 	if(!id) {
 		res.status(400);
@@ -255,7 +255,7 @@ app.delete('/api/tournaments/:id', function(req, res) {
 	});
 });
 
-app.get('/api/organizers', function(req, res){
+app.get('/api/organizers',checkAuth, function(req, res){
 	var numpagina = req.query.pagina;
 	db.open(function(err, db) {
 		if(err) {
@@ -282,7 +282,7 @@ app.get('/api/organizers', function(req, res){
 	});
 });
 
-app.get('/api/organizers/:id', function(req, res){
+app.get('/api/organizers/:id',checkAuth, function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(500);
@@ -319,7 +319,7 @@ app.get('/api/organizers/:id', function(req, res){
 	});
 });
 
-app.post('/api/organizers', function(req, res){
+app.post('/api/organizers',checkAuth, function(req, res){
 	var nuevoOrganizador = req.body;
 	if(nuevoOrganizador.name && nuevoOrganizador.email && nuevoOrganizador.organizacion) {
 		var organizadorCreado = {name: nuevoOrganizador.name, email:nuevoOrganizador.email, organizacion:nuevoOrganizador.organizacion};
@@ -349,7 +349,7 @@ app.post('/api/organizers', function(req, res){
 	}
 });
 
-app.put('/api/organizers/:id', function(req, res){
+app.put('/api/organizers/:id',checkAuth, function(req, res){
 	var id = req.params.id;
 	var organizador = req.body;
 	if(!id) {
@@ -386,7 +386,7 @@ app.put('/api/organizers/:id', function(req, res){
 	}
 });
 
-app.delete('/api/organizers/:id', function(req, res){
+app.delete('/api/organizers/:id',checkAuth, function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(400);
@@ -417,7 +417,7 @@ app.delete('/api/organizers/:id', function(req, res){
 	});
 });
 
-app.get('/api/tournaments/:id/competitors', function(req, res){
+app.get('/api/tournaments/:id/competitors',checkAuth, function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(404);
@@ -458,7 +458,7 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 	}
 });
 
-app.post('/api/tournaments/:id/competitors', function(req, res){
+app.post('/api/tournaments/:id/competitors',checkAuth, function(req, res){
 	var id = req.params.id;
 	var competitor = req.body;
 	if(!id) {

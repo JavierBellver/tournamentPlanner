@@ -18,7 +18,8 @@ module.exports = {
         	method: "POST", 
         	headers: { 
           		'Accept': 'application/json', 
-          		'Content-Type': 'application/json', 
+          		'Content-Type': 'application/json',
+          		'Authorization': 'Bearer '+localStorage.getItem('token'),
         	}, 
         	body: JSON.stringify(tournament)
       	})
@@ -33,7 +34,8 @@ module.exports = {
         	method: "PUT", 
         	headers: { 
           		'Accept': 'application/json', 
-          		'Content-Type': 'application/json', 
+          		'Content-Type': 'application/json',
+          		'Authorization': 'Bearer '+localStorage.getItem('token'),
         	}, 
         	body: JSON.stringify(tournament)
       	})
@@ -45,7 +47,8 @@ module.exports = {
 		return fetch(this.API_URL+'/'+id, {
         	method: "DELETE", 
         	headers: { 
-          		'Accept': 'application/json' 
+          		'Accept': 'application/json',
+          		'Authorization': 'Bearer '+localStorage.getItem('token'),
         	}
       	})
 		.then(function(response) {
