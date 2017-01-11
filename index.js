@@ -24,7 +24,6 @@ app.use('/web', express.static('web'));
 function checkAuth(req, res, next){
 	if(req.header('Authorization')) {
 		var token = req.header('Authorization').split(" ").pop();
-		console.log(token);
 		if(jwt.decode(token,secret) == user_id) {
 			next();
 		}
