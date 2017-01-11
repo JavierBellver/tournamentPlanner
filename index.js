@@ -256,6 +256,7 @@ app.delete('/api/tournaments/:id',checkAuth, function(req, res) {
 
 app.get('/api/organizers',checkAuth, function(req, res){
 	var numpagina = req.query.pagina;
+	var numlimite = req.query.limite;
 	db.open(function(err, db) {
 		if(err) {
 			res.status(500);
@@ -267,7 +268,7 @@ app.get('/api/organizers',checkAuth, function(req, res){
 				res.send("Error en la autenticacion con la BD");
 				return db.close();
 			}
-			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
+			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(parseInt(numlimite)).toArray(function(err, documents){
 				if(err) {
 					res.status(500);
 					res.send("Error obteniendo los organizadores");

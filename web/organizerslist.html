@@ -4,8 +4,14 @@
 	</head>
 	<body>
 		<h1>Lista de organizadores</h1>
+		<div id="editOrganizer"></div>
 		<div id="organizers"></div>
-		<div id="paginacion"></div>
+		<div id="paginacion">
+			<button id="nextPage">Siguiente página</button>
+			<button id="backPage">Anterior página</button>
+			<input type="text" id="tamPaginaInput" placeholder="Tamaño de la página"/>
+			<button id="tamPageButton">Insertar nuevo tamaño de página</button>
+		</div>
 		<div id="registerOrganizerForm">
 			<h2>Nuevo Organizador</h2>
 			<input id="organizerEmailInput" type="text" placeholder="Email del organizador"/>
@@ -17,21 +23,25 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 		<script type="application/javascript">
 			var API_URL = 'http://' + window.location.host + '/api/organizers';
+			var organizers = [];
 
 			function refreshOrganizers(pagenumber,tamPage) {
 				$.ajax({
-					url: API_URL,
+					url: API_URL+'?pagina='+pagenumber+'&limite='+tamPage,
 					method: "GET",
 					headers: {
 						'Authorization': 'Bearer '+localStorage.getItem('token'),
 					},
+					async: false,
 					success: function(data) {
+						$("#organizers").empty();
+						organizers = data;
 						for(var i = 0;i<data.length;i++) {
-							$('#organizers').append('<div class=organizer>')
+							$('#organizers').append('<div id="'+data[i]._id+'" class=organizer>')
 							$('#organizers').append(data[i].email)
-							$('#organizers').append('<span className="detalles"><a href="#" class="detallesLink">Detalles</a></span>')
-							$('#organizers').append('<span className="editar"><a href="#" class="editarLink">Editar</a></span>')
-							$('#organizers').append('<span className="eliminar"><a href="#" class="eliminarLink">Eliminar</a></span>')
+							$('#organizers').append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ data[i]._id +'">Detalles</a></span>')
+							$('#organizers').append('<span className="editar"><a href="#" class="editarLink" data-id="'+ data[i]._id +'">Editar</a></span>')
+							$('#organizers').append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ data[i]._id +'">Eliminar</a></span>')
 							$('#organizers').append('</div>')
 						}
 					},
@@ -50,7 +60,6 @@
 					},
 					data: JSON.stringify(newOrganizer),
 					contentType: "application/json",
-					dataType: 'json',
 					success: function() {
 						console.log("Success creating user");
 					},
@@ -61,22 +70,49 @@
 			}
 
 			function editOrganizer(editedOrganizer,id) {
-
+				$.ajax({
+					url: API_URL+'/'+id,
+					method: "PUT",
+					headers: {
+						'Authorization': 'Bearer '+localStorage.getItem('token'),
+					},
+					data: JSON.stringify(editedOrganizer),
+					contentType: "application/json",
+					success: function() {
+						$('#editOrganizer').empty();
+						console.log("Success editing user");
+					},
+					error: function() {
+						console.log("PUT Error")
+					}
+				})
 			}
 
 			function deleteOrganizer(id) {
-
+				$.ajax({
+					url: API_URL+'/'+id,
+					method: "DELETE",
+					headers: {
+						'Authorization': 'Bearer '+localStorage.getItem('token'),
+					},
+					success: function() {
+						console.log("DELETED")
+					},
+					error: function() {
+						console.log("DELETE ERROR")
+					}
+				})
 			}
 
 			$(document).ready(function(){
 				var pagenumber = 1;
-				var tamPage = 3;
+				var tamPage;
 				refreshOrganizers(pagenumber,tamPage);
 				$('#AddOrganizerButton').on('click', function(){
 					var newOrganizer = {
 						email: $("#organizerEmailInput").val(),
 						name: $("#organizerNameInput").val(),
-						organizacion: $("#organizerOrgInput").val(),
+						organizacion: $("#organizerOrgInput").val()
 					}
 					createOrganizer(newOrganizer);
 				})
@@ -84,13 +120,41 @@
 					console.log('details');
 				})
 				$('#organizers').on('click','.editarLink', function(){
-					console.log('editar');
+					var id = $(this).data('id');
+					$('#editOrganizer').empty();
+					$('#editOrganizer').append('<h2>Editar Organizador</h2>');
+					$('#editOrganizer').append('<input id="EditorganizerEmailInput" type="text" placeholder="Email del organizador"/>');
+					$('#editOrganizer').append('<input id="EditorganizerNameInput" type="text" placeholder="Nombre del organizador"/>');
+					$('#editOrganizer').append('<input id="EditorganizerOrgInput" type="text" placeholder="Organizacion a la que pertenece"/>');
+					$('#editOrganizer').append('<button id="EditOrganizerButton">Editar organizador</button>');
+					$('#editOrganizer').on('click','#EditOrganizerButton', function() {
+						var editedOrganizer = {
+							email: $("#EditorganizerEmailInput").val(),
+							name: $("#EditorganizerNameInput").val(),
+							organizacion: $("#EditorganizerOrgInput").val()
+						}
+						editOrganizer(editedOrganizer,id);
+					})
 				})
 				$('#organizers').on('click','.eliminarLink', function(){
-					console.log('eliminar');
+					deleteOrganizer($(this).data('id'));
+				})
+				$('#nextPage').on('click', function(){
+					pagenumber+=1;
+					refreshOrganizers(pagenumber,tamPage);
+				})
+				$('#backPage').on('click', function(){
+					pagenumber = pagenumber-1;
+					if(pagenumber<1) {
+						pagenumber = 1;
+					}
+					refreshOrganizers(pagenumber,tamPage);
+				})
+				$('#tamPageButton').on('click', function(){
+					tamPage = $('#tamPaginaInput').val();
+					refreshOrganizers(pagenumber,tamPage);
 				})
 				console.log('document ready');
-				console.log($('.detallesLink a'))
 			})
 		</script>
 	</body>
