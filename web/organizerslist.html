@@ -37,12 +37,12 @@
 						$("#organizers").empty();
 						organizers = data;
 						for(var i = 0;i<data.length;i++) {
+							var id = '#'+data[i]._id;
 							$('#organizers').append('<div id="'+data[i]._id+'" class=organizer>')
-							$('#organizers').append(data[i].email)
-							$('#organizers').append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ data[i]._id +'">Detalles</a></span>')
-							$('#organizers').append('<span className="editar"><a href="#" class="editarLink" data-id="'+ data[i]._id +'">Editar</a></span>')
-							$('#organizers').append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ data[i]._id +'">Eliminar</a></span>')
-							$('#organizers').append('</div>')
+							$(id).append(data[i].email)
+							$(id).append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ data[i]._id +'">Detalles</a></span>')
+							$(id).append('<span className="editar"><a href="#" class="editarLink" data-id="'+ data[i]._id +'">Editar</a></span>')
+							$(id).append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ data[i]._id +'">Eliminar</a></span>')
 						}
 					},
 					error: function() {
@@ -117,7 +117,32 @@
 					createOrganizer(newOrganizer);
 				})
 				$('#organizers').on('click','.detallesLink', function(){
-					console.log('details');
+					var id = '#'+$(this).data('id');
+					var organizer;
+					for(var i=0;i<organizers.length;i++) {
+						if(organizers[i]._id == $(this).data('id')) {
+							organizer = organizers[i];
+						}
+					}
+					$(id).empty();
+					$(id).append(organizer.email)
+					$(id).append(organizer.name)
+					$(id).append(organizer.organizacion)
+					$(id).append('<span className="detalles"><a href="#" class="noDetallesLink" data-id="'+ organizer._id +'">Ocultar detalles</a></span>')
+				})
+				$('#organizers').on('click','.noDetallesLink', function(){
+					var id = '#'+$(this).data('id');
+					var organizer;
+					for(var i=0;i<organizers.length;i++) {
+						if(organizers[i]._id == $(this).data('id')) {
+							organizer = organizers[i];
+						}
+					}
+					$(id).empty();
+					$(id).append(organizer.email)
+					$(id).append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ organizer._id +'">Detalles</a></span>')
+					$(id).append('<span className="editar"><a href="#" class="editarLink" data-id="'+ organizer._id +'">Editar</a></span>')
+					$(id).append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ organizer._id +'">Eliminar</a></span>')
 				})
 				$('#organizers').on('click','.editarLink', function(){
 					var id = $(this).data('id');
