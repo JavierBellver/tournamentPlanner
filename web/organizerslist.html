@@ -24,13 +24,14 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 		<script id="lista-template" type="text/x-handlebars-template">
-            <div class="row">
-                <div class="col-md-12">
                         {{#organizersList}}
-                            <p>{{email}}</p>
+                        	<div id={{_id}} class=organizer>
+                            	<span>{{email}}</span>
+                            	<span className="detalles"><a href="#" class="detallesLink" data-id={{_id}}>Detalles</a></span>
+                            	<span className="editar"><a href="#" class="editarLink" data-id={{_id}}>Editar</a></span>
+                            	<span className="eliminar"><a href="#" class="eliminarLink" data-id={{_id}}>Eliminar</a></span>
+                            </div>
                         {{/organizersList}}
-                </div>
-            </div>
 		</script>
 		<script type="application/javascript">
 			var API_URL = 'http://' + window.location.host + '/api/organizers';
@@ -46,27 +47,13 @@
 					async: false,
 					success: function(data) {
 						$("#organizers").empty();
-						var organizers = {
+						var organizersObject = {
 							organizersList: data
 						}
-						/*for(var i = 0;i<data.length;i++) {
-							var id = '#'+data[i]._id;
-							$('#organizers').append('<div id="'+data[i]._id+'" class=organizer>')
-							$(id).append(data[i].email)
-							$(id).append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ data[i]._id +'">Detalles</a></span>')
-							$(id).append('<span className="editar"><a href="#" class="editarLink" data-id="'+ data[i]._id +'">Editar</a></span>')
-							$(id).append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ data[i]._id +'">Eliminar</a></span>')
-						}
-						Handlebars.registerHelper('lista', function(items,options){
-							var out = "<ul>";
-							for(var i=0;items.length;i++) {
-								out = out + options.fn(items[i]) + "<li>";
-							}
-							return out + "</ul>";
-						});*/
+						organizers = data;
 						var source = $('#lista-template').html();
 						var list = Handlebars.compile(source);
-						var html = list(organizers);
+						var html = list(organizersObject);
 						console.log(html)
 						$('#organizers').append(html);
 					},
@@ -150,10 +137,10 @@
 						}
 					}
 					$(id).empty();
-					$(id).append(organizer.email)
-					$(id).append(organizer.name)
-					$(id).append(organizer.organizacion)
-					$(id).append('<span className="detalles"><a href="#" class="noDetallesLink" data-id="'+ organizer._id +'">Ocultar detalles</a></span>')
+					$(id).append('<span> '+organizer.email+'</span>')
+					$(id).append('<span> '+organizer.name+'</span>')
+					$(id).append('<span> '+organizer.organizacion+'</span>')
+					$(id).append('<span className="detalles"><a href="#" class="noDetallesLink" data-id="'+ organizer._id +'"> Ocultar detalles</a></span>')
 				})
 				$('#organizers').on('click','.noDetallesLink', function(){
 					var id = '#'+$(this).data('id');
@@ -164,7 +151,7 @@
 						}
 					}
 					$(id).empty();
-					$(id).append(organizer.email)
+					$(id).append('<span>'+organizer.email+'</span>')
 					$(id).append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ organizer._id +'">Detalles</a></span>')
 					$(id).append('<span className="editar"><a href="#" class="editarLink" data-id="'+ organizer._id +'">Editar</a></span>')
 					$(id).append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ organizer._id +'">Eliminar</a></span>')
