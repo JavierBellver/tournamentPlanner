@@ -5,7 +5,8 @@
 	<body>
 		<h1>Lista de organizadores</h1>
 		<div id="editOrganizer"></div>
-		<div id="organizers"></div>
+		<div id="organizers">
+		</div>
 		<div id="paginacion">
 			<button id="nextPage">Siguiente página</button>
 			<button id="backPage">Anterior página</button>
@@ -19,8 +20,18 @@
 			<input id="organizerOrgInput" type="text" placeholder="Organizacion a la que pertenece"/>
 			<button id="AddOrganizerButton">Registrar un nuevo organizador</button>
 		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.js" integrity="sha256-AunHBHi07QREz6ipU5g+CgOItzHsewdmK9Zn1WgWvyw=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script id="lista-template" type="text/x-handlebars-template">
+            <div class="row">
+                <div class="col-md-12">
+                        {{#organizersList}}
+                            <p>{{email}}</p>
+                        {{/organizersList}}
+                </div>
+            </div>
+		</script>
 		<script type="application/javascript">
 			var API_URL = 'http://' + window.location.host + '/api/organizers';
 			var organizers = [];
@@ -35,8 +46,10 @@
 					async: false,
 					success: function(data) {
 						$("#organizers").empty();
-						organizers = data;
-						for(var i = 0;i<data.length;i++) {
+						var organizers = {
+							organizersList: data
+						}
+						/*for(var i = 0;i<data.length;i++) {
 							var id = '#'+data[i]._id;
 							$('#organizers').append('<div id="'+data[i]._id+'" class=organizer>')
 							$(id).append(data[i].email)
@@ -44,6 +57,18 @@
 							$(id).append('<span className="editar"><a href="#" class="editarLink" data-id="'+ data[i]._id +'">Editar</a></span>')
 							$(id).append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ data[i]._id +'">Eliminar</a></span>')
 						}
+						Handlebars.registerHelper('lista', function(items,options){
+							var out = "<ul>";
+							for(var i=0;items.length;i++) {
+								out = out + options.fn(items[i]) + "<li>";
+							}
+							return out + "</ul>";
+						});*/
+						var source = $('#lista-template').html();
+						var list = Handlebars.compile(source);
+						var html = list(organizers);
+						console.log(html)
+						$('#organizers').append(html);
 					},
 					error: function() {
 						console.log("GET Error")
