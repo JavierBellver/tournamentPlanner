@@ -17,7 +17,8 @@
     "react": "^15.4.1",
     "react-bootstrap": "^0.30.7",
     "react-dom": "^15.4.1",
-    "watchify": "^3.8.0"
+    "watchify": "^3.8.0",
+    "wolfy-eventemitter": "^0.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",

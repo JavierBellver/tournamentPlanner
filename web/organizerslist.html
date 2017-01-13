@@ -1,0 +1,204 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	</head>
+	<body>
+		<h1>Lista de organizadores</h1>
+		<ul>
+			<li><a href="#" id="logout">Logout</a></li>
+		</ul>
+		<div id="editOrganizer"></div>
+		<div id="organizers">
+		</div>
+		<div id="paginacion">
+			<button id="nextPage">Siguiente página</button>
+			<button id="backPage">Anterior página</button>
+			<input type="text" id="tamPaginaInput" placeholder="Tamaño de la página"/>
+			<button id="tamPageButton">Insertar nuevo tamaño de página</button>
+		</div>
+		<div id="registerOrganizerForm">
+			<h2>Nuevo Organizador</h2>
+			<input id="organizerEmailInput" type="text" placeholder="Email del organizador"/>
+			<input id="organizerNameInput" type="text" placeholder="Nombre del organizador"/>
+			<input id="organizerOrgInput" type="text" placeholder="Organizacion a la que pertenece"/>
+			<button id="AddOrganizerButton">Registrar un nuevo organizador</button>
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.js" integrity="sha256-AunHBHi07QREz6ipU5g+CgOItzHsewdmK9Zn1WgWvyw=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script id="lista-template" type="text/x-handlebars-template">
+                        {{#organizersList}}
+                        	<div id={{_id}} class=organizer>
+                            	<span>{{email}}</span>
+                            	<span className="detalles"><a href="#" class="detallesLink" data-id={{_id}}>Detalles</a></span>
+                            	<span className="editar"><a href="#" class="editarLink" data-id={{_id}}>Editar</a></span>
+                            	<span className="eliminar"><a href="#" class="eliminarLink" data-id={{_id}}>Eliminar</a></span>
+                            </div>
+                        {{/organizersList}}
+		</script>
+		<script type="application/javascript">
+			var API_URL = 'http://' + window.location.host + '/api/organizers';
+			var organizers = [];
+
+			function refreshOrganizers(pagenumber,tamPage) {
+				$.ajax({
+					url: API_URL+'?pagina='+pagenumber+'&limite='+tamPage,
+					method: "GET",
+					headers: {
+						'Authorization': 'Bearer '+localStorage.getItem('token'),
+					},
+					async: false,
+					success: function(data) {
+						$("#organizers").empty();
+						var organizersObject = {
+							organizersList: data
+						}
+						organizers = data;
+						var source = $('#lista-template').html();
+						var list = Handlebars.compile(source);
+						var html = list(organizersObject);
+						$('#organizers').append(html);
+					},
+					error: function() {
+						console.log("GET Error")
+					}
+				});
+			}
+
+			function createOrganizer(newOrganizer) {
+				$.ajax({
+					url: API_URL,
+					method: "POST",
+					headers: {
+						'Authorization': 'Bearer '+localStorage.getItem('token'),
+					},
+					data: JSON.stringify(newOrganizer),
+					contentType: "application/json",
+					success: function() {
+						console.log("Success creating user");
+					},
+					error: function() {
+						console.log("POST Error")
+					}
+				})
+			}
+
+			function editOrganizer(editedOrganizer,id) {
+				$.ajax({
+					url: API_URL+'/'+id,
+					method: "PUT",
+					headers: {
+						'Authorization': 'Bearer '+localStorage.getItem('token'),
+					},
+					data: JSON.stringify(editedOrganizer),
+					contentType: "application/json",
+					success: function() {
+						$('#editOrganizer').empty();
+						console.log("Success editing user");
+					},
+					error: function() {
+						console.log("PUT Error")
+					}
+				})
+			}
+
+			function deleteOrganizer(id) {
+				$.ajax({
+					url: API_URL+'/'+id,
+					method: "DELETE",
+					headers: {
+						'Authorization': 'Bearer '+localStorage.getItem('token'),
+					},
+					success: function() {
+						console.log("DELETED")
+					},
+					error: function() {
+						console.log("DELETE ERROR")
+					}
+				})
+			}
+
+			$(document).ready(function(){
+				var pagenumber = 1;
+				var tamPage;
+				refreshOrganizers(pagenumber,tamPage);
+				$('#AddOrganizerButton').on('click', function(){
+					var newOrganizer = {
+						email: $("#organizerEmailInput").val(),
+						name: $("#organizerNameInput").val(),
+						organizacion: $("#organizerOrgInput").val()
+					}
+					createOrganizer(newOrganizer);
+				})
+				$('#organizers').on('click','.detallesLink', function(){
+					var id = '#'+$(this).data('id');
+					var organizer;
+					for(var i=0;i<organizers.length;i++) {
+						if(organizers[i]._id == $(this).data('id')) {
+							organizer = organizers[i];
+						}
+					}
+					$(id).empty();
+					$(id).append('<span> '+organizer.email+'</span>')
+					$(id).append('<span> '+organizer.name+'</span>')
+					$(id).append('<span> '+organizer.organizacion+'</span>')
+					$(id).append('<span className="detalles"><a href="#" class="noDetallesLink" data-id="'+ organizer._id +'"> Ocultar detalles</a></span>')
+				})
+				$('#organizers').on('click','.noDetallesLink', function(){
+					var id = '#'+$(this).data('id');
+					var organizer;
+					for(var i=0;i<organizers.length;i++) {
+						if(organizers[i]._id == $(this).data('id')) {
+							organizer = organizers[i];
+						}
+					}
+					$(id).empty();
+					$(id).append('<span>'+organizer.email+'</span>')
+					$(id).append('<span className="detalles"><a href="#" class="detallesLink" data-id="'+ organizer._id +'">Detalles</a></span>')
+					$(id).append('<span className="editar"><a href="#" class="editarLink" data-id="'+ organizer._id +'">Editar</a></span>')
+					$(id).append('<span className="eliminar"><a href="#" class="eliminarLink" data-id="'+ organizer._id +'">Eliminar</a></span>')
+				})
+				$('#organizers').on('click','.editarLink', function(){
+					var id = $(this).data('id');
+					$('#editOrganizer').empty();
+					$('#editOrganizer').append('<h2>Editar Organizador</h2>');
+					$('#editOrganizer').append('<input id="EditorganizerEmailInput" type="text" placeholder="Email del organizador"/>');
+					$('#editOrganizer').append('<input id="EditorganizerNameInput" type="text" placeholder="Nombre del organizador"/>');
+					$('#editOrganizer').append('<input id="EditorganizerOrgInput" type="text" placeholder="Organizacion a la que pertenece"/>');
+					$('#editOrganizer').append('<button id="EditOrganizerButton">Editar organizador</button>');
+					$('#editOrganizer').on('click','#EditOrganizerButton', function() {
+						var editedOrganizer = {
+							email: $("#EditorganizerEmailInput").val(),
+							name: $("#EditorganizerNameInput").val(),
+							organizacion: $("#EditorganizerOrgInput").val()
+						}
+						editOrganizer(editedOrganizer,id);
+					})
+				})
+				$('#organizers').on('click','.eliminarLink', function(){
+					deleteOrganizer($(this).data('id'));
+				})
+				$('#nextPage').on('click', function(){
+					pagenumber+=1;
+					refreshOrganizers(pagenumber,tamPage);
+				})
+				$('#backPage').on('click', function(){
+					pagenumber = pagenumber-1;
+					if(pagenumber<1) {
+						pagenumber = 1;
+					}
+					refreshOrganizers(pagenumber,tamPage);
+				})
+				$('#tamPageButton').on('click', function(){
+					tamPage = $('#tamPaginaInput').val();
+					refreshOrganizers(pagenumber,tamPage);
+				})
+				$('#logout').on('click', function(){
+					localStorage.removeItem('token');
+					window.location.replace('http://'+window.location.host+'/web');
+				})
+				console.log('document ready');
+			})
+		</script>
+	</body>
+</html>

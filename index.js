@@ -15,18 +15,40 @@ var MongoUrl = 'mongodb://tournamentplanneruser:tournamentplannerpassword@ds1391
 var db = new Db('heroku_vgr65f61', new Server('ds139197.mlab.com',39197));
 var jwt = require('jwt-simple');
 var secret = '123456';
+var user_id = 1;
 
 app.use(bodyParser.json());
 app.set('port', (process.env.PORT || 3000));
 app.use('/web', express.static('web'));
 
+function checkAuth(req, res, next){
+	if(req.header('Authorization')) {
+		var token = req.header('Authorization').split(" ").pop();
+		if(jwt.decode(token,secret) == user_id) {
+			next();
+		}
+		else {
+			res.status(401);
+			var obj = {
+				mensaje: "Not Authorized"
+			}
+			res.json(obj);
+		}
+	}
+	else {
+		res.status(401);
+		var obj = {
+			mensaje: "Not Authorized"
+		}
+		res.json(obj);
+	}
+}
+
 app.post('/login', function(req, res){
 	var loginData = req.body;
-	console.log(loginData);
 	if(loginData.login && loginData.password) {
 		if(loginData.login == "usuario" && loginData.password == "password") {
 			res.status(200);
-			var user_id = 1;
 			var token = jwt.encode(user_id,secret);
 			var obj = {
 				mensaje: "Autorizado",
@@ -59,20 +81,27 @@ app.get('/logout', function(req, res){
 	res.json(obj);
 });
 
-app.get('/api/tournaments', function(req, res){
+app.get('/api/tournaments', checkAuth, function(req, res){
 	var numpagina = req.query.pagina;
+	var numlimite = req.query.limite;
 	db.open(function(err, db) {
 		if(err) {
 			res.status(500);
-			return res.send("Error en la llamada a la BD para obtener los torneos")
+			var obj = {
+				mensaje: "Error en la llamada a la BD para obtener los torneos"
+			}
+			return res.json(obj);
 		}
 		db.authenticate("tournamentplanneruser","tournamentplannerpassword", function(err, authdb){
 			if(err) {
 				res.status(500);
-				res.send("Error en la autenticacion con la BD");
+				var obj = {
+					mensaje: "Error en la autenticacion con la BD"
+				}
+				res.json(obj);
 				return db.close();
 			}
-			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
+			db.collection("tournamentcollection").find().skip(3*(numpagina-1)).limit(parseInt(numlimite)).toArray(function(err, documents){
 				assert.equal(null, err);
 				res.send(documents);
 				return db.close();
@@ -81,7 +110,7 @@ app.get('/api/tournaments', function(req, res){
 	});
 });
 
-app.get('/api/tournaments/:id', function(req, res) {
+app.get('/api/tournaments/:id',checkAuth, function(req, res) {
 	var id = req.params.id;
 	if(!id) {
 		res.status(404);
@@ -119,7 +148,7 @@ app.get('/api/tournaments/:id', function(req, res) {
 	}
 });
 
-app.post('/api/tournaments', function(req, res){
+app.post('/api/tournaments',checkAuth, function(req, res){
 	var nuevoTorneo = req.body;
 	if(nuevoTorneo.name && nuevoTorneo.game && nuevoTorneo.matches && nuevoTorneo.competitors) {
 		var torneoCreado = {name: nuevoTorneo.name, game:nuevoTorneo.game, matches:nuevoTorneo.matches, competitors:nuevoTorneo.competitors};
@@ -148,7 +177,7 @@ app.post('/api/tournaments', function(req, res){
 	}
 });
 
-app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
+app.put('/api/tournaments/:id',checkAuth, function(req, res){ //TODO arreglar put
 	var nuevoTorneo = req.body;	
 	var id = req.params.id;
 	if(!id) {
@@ -186,7 +215,7 @@ app.put('/api/tournaments/:id', function(req, res){ //TODO arreglar put
 	}
 });
 
-app.delete('/api/tournaments/:id', function(req, res) {
+app.delete('/api/tournaments/:id',checkAuth, function(req, res) {
 	var id = req.params.id;
 	if(!id) {
 		res.status(400);
@@ -225,8 +254,9 @@ app.delete('/api/tournaments/:id', function(req, res) {
 	});
 });
 
-app.get('/api/organizers', function(req, res){
+app.get('/api/organizers',checkAuth, function(req, res){
 	var numpagina = req.query.pagina;
+	var numlimite = req.query.limite;
 	db.open(function(err, db) {
 		if(err) {
 			res.status(500);
@@ -238,7 +268,7 @@ app.get('/api/organizers', function(req, res){
 				res.send("Error en la autenticacion con la BD");
 				return db.close();
 			}
-			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(3).toArray(function(err, documents){
+			db.collection("organizerscollection").find().skip(3*(numpagina-1)).limit(parseInt(numlimite)).toArray(function(err, documents){
 				if(err) {
 					res.status(500);
 					res.send("Error obteniendo los organizadores");
@@ -252,7 +282,7 @@ app.get('/api/organizers', function(req, res){
 	});
 });
 
-app.get('/api/organizers/:id', function(req, res){
+app.get('/api/organizers/:id',checkAuth, function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(500);
@@ -289,7 +319,7 @@ app.get('/api/organizers/:id', function(req, res){
 	});
 });
 
-app.post('/api/organizers', function(req, res){
+app.post('/api/organizers',checkAuth, function(req, res){
 	var nuevoOrganizador = req.body;
 	if(nuevoOrganizador.name && nuevoOrganizador.email && nuevoOrganizador.organizacion) {
 		var organizadorCreado = {name: nuevoOrganizador.name, email:nuevoOrganizador.email, organizacion:nuevoOrganizador.organizacion};
@@ -319,7 +349,7 @@ app.post('/api/organizers', function(req, res){
 	}
 });
 
-app.put('/api/organizers/:id', function(req, res){
+app.put('/api/organizers/:id',checkAuth, function(req, res){
 	var id = req.params.id;
 	var organizador = req.body;
 	if(!id) {
@@ -356,7 +386,7 @@ app.put('/api/organizers/:id', function(req, res){
 	}
 });
 
-app.delete('/api/organizers/:id', function(req, res){
+app.delete('/api/organizers/:id',checkAuth, function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(400);
@@ -387,7 +417,7 @@ app.delete('/api/organizers/:id', function(req, res){
 	});
 });
 
-app.get('/api/tournaments/:id/competitors', function(req, res){
+app.get('/api/tournaments/:id/competitors',checkAuth, function(req, res){
 	var id = req.params.id;
 	if(!id) {
 		res.status(404);
@@ -428,7 +458,7 @@ app.get('/api/tournaments/:id/competitors', function(req, res){
 	}
 });
 
-app.post('/api/tournaments/:id/competitors', function(req, res){
+app.post('/api/tournaments/:id/competitors',checkAuth, function(req, res){
 	var id = req.params.id;
 	var competitor = req.body;
 	if(!id) {
