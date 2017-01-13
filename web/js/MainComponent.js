@@ -10,6 +10,7 @@ var MainPage = React.createClass({
 	},
 	componentDidMount: function() {
 		EventBus.eventEmitter.addListener('loggedIn', this.onLogin)
+		EventBus.eventEmitter.addListener('loggedOut', this.onLogout)
 		this.renderLogin();
 	},
 	onLogin: function () {
@@ -29,10 +30,7 @@ var MainPage = React.createClass({
 	},
 	render: function () {
 		return 	<div>
-					<h1>Bienvenido a TournamentPlanner</h1>
-					<ul>
-					  <li><a href="#" onClick={this.onLogout}>Logout</a></li>
-					</ul> 
+					<h1>Bienvenido a TournamentPlanner</h1> 
 					<div id="loginComponent"></div>
 					<div id="tournamentListComponent"></div>
 				</div>

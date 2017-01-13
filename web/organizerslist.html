@@ -4,6 +4,9 @@
 	</head>
 	<body>
 		<h1>Lista de organizadores</h1>
+		<ul>
+			<li><a href="#" id="logout">Logout</a></li>
+		</ul>
 		<div id="editOrganizer"></div>
 		<div id="organizers">
 		</div>
@@ -54,7 +57,6 @@
 						var source = $('#lista-template').html();
 						var list = Handlebars.compile(source);
 						var html = list(organizersObject);
-						console.log(html)
 						$('#organizers').append(html);
 					},
 					error: function() {
@@ -190,6 +192,10 @@
 				$('#tamPageButton').on('click', function(){
 					tamPage = $('#tamPaginaInput').val();
 					refreshOrganizers(pagenumber,tamPage);
+				})
+				$('#logout').on('click', function(){
+					localStorage.removeItem('token');
+					window.location.replace('http://'+window.location.host+'/web');
 				})
 				console.log('document ready');
 			})

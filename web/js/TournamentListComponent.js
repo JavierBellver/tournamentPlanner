@@ -78,6 +78,9 @@ var TournamentList = React.createClass({
 		this.setState({tamPagina:tamPagina})
 		this.refrescarTorneos(this.state.pagenumber,tamPagina);
 	},
+	logout: function() {
+		EventBus.eventEmitter.emit('loggedOut')
+	},
 	renderAddTournament: function() {
 		ReactDOM.render(<AddTournamentComponent/>, document.getElementById('addNewTournament'));
 	},
@@ -111,6 +114,10 @@ var TournamentList = React.createClass({
 			tournaments.push(elemento);
 		}
 		return <div id="lista">
+					<ul>
+						<li><a href={'http://' +window.location.host+'/web/organizerslist.html'} >OrganizersList</a></li>
+					  	<li><a href="#" onClick={this.logout}>Logout</a></li>
+					</ul>
 					<h1>Lista de torneos</h1>
 					<div id="editTournament"></div>
 					{tournaments}
